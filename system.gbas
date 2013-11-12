@@ -1,0 +1,109 @@
+// --------------------------------- //
+// Project: Starbase_Alpha_dev
+// Start: Monday, November 11, 2013
+// IDE Version: 11.414
+
+TYPE settings_type
+	resolution_x
+	resolution_y
+	fullscreen
+ENDTYPE
+
+TYPE mouse_type
+	x
+	y
+	b1
+	b2
+	b1_press
+	b2_press
+ENDTYPE
+
+GLOBAL sys_settings AS settings_type
+GLOBAL gui_mouse AS mouse_type
+
+
+FUNCTION sys_init:
+
+	sys_check_resolution()
+	sys_screen_settings()
+
+ENDFUNCTION
+
+FUNCTION sys_check_resolution:
+LOCAL file_exist
+
+	file_exist = DOESFILEEXIST("options.ini")
+
+	IF file_exist = TRUE
+		INIOPEN "options.ini"
+			sys_settings.resolution_x = INIGET$("options", "res_x")
+			sys_settings.resolution_y = INIGET$("options", "res_y")
+			sys_settings.fullscreen = INIGET$("options", "fulls")
+		INIOPEN ""
+	ENDIF
+
+	IF file_exist = FALSE
+		sys_settings.resolution_x = 1024
+		sys_settings.resolution_y = 768
+		sys_settings.fullscreen = FALSE
+		
+		sys_create_options()
+	ENDIF
+
+ENDFUNCTION
+
+FUNCTION sys_screen_settings:
+
+	SETSCREEN sys_settings.resolution_x, sys_settings.resolution_y, sys_settings.fullscreen
+
+ENDFUNCTION
+
+FUNCTION sys_create_options:
+
+	INIOPEN "options.ini"
+		INIPUT "options", "res_x", "1024"
+		INIPUT "options", "res_y", "768"
+		INIPUT "options", "fulls", "0"
+	INIOPEN ""
+
+ENDFUNCTION
+
+FUNCTION sys_mouse:
+// ==================
+// Mouse Routine v1.1
+// ==================
+LOCAL x, y, b1, b2, b1_press, b2_press
+STATIC b1_tmp, b2_tmp
+
+	MOUSESTATE x, y, b1_press, b2_press
+
+		gui_mouse.x = x
+		gui_mouse.y = y
+
+	IF b1_press = FALSE THEN b1 = FALSE
+	IF b1_press = TRUE THEN b1_tmp = TRUE
+	IF b1_press = FALSE AND b1_tmp = TRUE
+		b1 = TRUE
+		b1_tmp = FALSE
+	ENDIF
+
+	IF b2_press = FALSE THEN b2 = FALSE
+	IF b2_press = TRUE THEN b2_tmp = TRUE
+	IF b2_press = FALSE AND b2_tmp = TRUE
+		b2 = TRUE
+		b2_tmp = FALSE
+	ENDIF
+
+	gui_mouse.b1 = b1
+	gui_mouse.b2 = b2
+	gui_mouse.b1_press = b1_press
+	gui_mouse.b2_press = b2_press
+
+ENDFUNCTION
+
+
+FUNCTION sys:
+
+	sys_mouse()
+
+ENDFUNCTION

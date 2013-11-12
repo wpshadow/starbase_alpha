@@ -1,0 +1,28 @@
+// --------------------------------- //
+// Project: Starbase_Alpha_dev
+// Start: Monday, November 11, 2013
+// IDE Version: 11.322
+
+
+// SETCURRENTDIR("Media") // go to media files
+
+
+
+main()
+
+
+FUNCTION main:
+
+	sys_init()
+
+	WHILE TRUE
+	
+		sys()
+	
+		gui()
+	
+		SHOWSCREEN
+	WEND
+
+
+ENDFUNCTION
