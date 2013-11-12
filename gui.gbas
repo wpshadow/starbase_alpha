@@ -11,8 +11,8 @@
 FUNCTION gui:
 
 	gui_draw_side_menu()
-	
-	gui_draw_mouse(gui_mouse.x, gui_mouse.y)
+
+	gui_draw_mouse(mouse.x, mouse.y)
 
 ENDFUNCTION
 
@@ -34,32 +34,34 @@ ENDFUNCTION
 
 FUNCTION gui_draw_field:
 
-	
+
 
 ENDFUNCTION
 
 FUNCTION gui_draw_side_menu:
 LOCAL alpha, aktuell, maximum
+
+	IF keyboard.space_press = TRUE
+		IF mouse.x >= sys_settings.resolution_x - 300
+			IF mouse.x <= sys_settings.resolution_x - 200 AND mouse.x >= sys_settings.resolution_x - 300
+				alpha = (((((sys_settings.resolution_x - 300) - mouse.x) * -1) * 98) / 100) / 100
+			ELSE
+				alpha = 0.98
+			ENDIF
 	
-	IF gui_mouse.x >= sys_settings.resolution_x - 250
-		IF gui_mouse.x <= sys_settings.resolution_x - 200 AND gui_mouse.x >= sys_settings.resolution_x - 250
-			alpha = (((((sys_settings.resolution_x - 250) - gui_mouse.x) * -1) * 98) / 50) / 100
-		ELSE
-			alpha = 0.98
 		ENDIF
 	
+		ALPHAMODE -0.01 - alpha
+	
+		STARTPOLY
+			POLYVECTOR sys_settings.resolution_x - 200, 0, 0, 0, RGB(32, 32, 32)
+			POLYVECTOR sys_settings.resolution_x - 200, sys_settings.resolution_y, 0, 0, RGB(32, 32, 32)
+			POLYVECTOR sys_settings.resolution_x, sys_settings.resolution_y, 0, 0, RGB(0, 0, 0)
+			POLYVECTOR sys_settings.resolution_x, 0, 0, 0, RGB(0, 0, 0)
+	
+		ENDPOLY
+	
+		ALPHAMODE 0
 	ENDIF
-
-	ALPHAMODE -0.01 - alpha
-
-	STARTPOLY
-		POLYVECTOR sys_settings.resolution_x - 200, 0, 0, 0, RGB(32, 32, 32)
-		POLYVECTOR sys_settings.resolution_x - 200, sys_settings.resolution_y, 0, 0, RGB(32, 32, 32)
-		POLYVECTOR sys_settings.resolution_x, sys_settings.resolution_y, 0, 0, RGB(0, 0, 0)
-		POLYVECTOR sys_settings.resolution_x, 0, 0, 0, RGB(0, 0, 0)
-	
-	ENDPOLY
-	
-	ALPHAMODE 0
 
 ENDFUNCTION

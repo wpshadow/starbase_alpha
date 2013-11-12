@@ -18,8 +18,14 @@ TYPE mouse_type
 	b2_press
 ENDTYPE
 
+TYPE keyboard_type
+	space
+	space_press
+ENDTYPE
+
 GLOBAL sys_settings AS settings_type
-GLOBAL gui_mouse AS mouse_type
+GLOBAL mouse AS mouse_type
+GLOBAL keyboard AS keyboard_type
 
 
 FUNCTION sys_init:
@@ -46,7 +52,7 @@ LOCAL file_exist
 		sys_settings.resolution_x = 1024
 		sys_settings.resolution_y = 768
 		sys_settings.fullscreen = FALSE
-		
+
 		sys_create_options()
 	ENDIF
 
@@ -77,8 +83,8 @@ STATIC b1_tmp, b2_tmp
 
 	MOUSESTATE x, y, b1_press, b2_press
 
-		gui_mouse.x = x
-		gui_mouse.y = y
+		mouse.x = x
+		mouse.y = y
 
 	IF b1_press = FALSE THEN b1 = FALSE
 	IF b1_press = TRUE THEN b1_tmp = TRUE
@@ -94,10 +100,10 @@ STATIC b1_tmp, b2_tmp
 		b2_tmp = FALSE
 	ENDIF
 
-	gui_mouse.b1 = b1
-	gui_mouse.b2 = b2
-	gui_mouse.b1_press = b1_press
-	gui_mouse.b2_press = b2_press
+	mouse.b1 = b1
+	mouse.b2 = b2
+	mouse.b1_press = b1_press
+	mouse.b2_press = b2_press
 
 ENDFUNCTION
 
@@ -105,5 +111,16 @@ ENDFUNCTION
 FUNCTION sys:
 
 	sys_mouse()
+	sys_keyboard()
+
+ENDFUNCTION
+
+FUNCTION sys_keyboard:
+
+	IF KEY(57) = 1
+		keyboard.space_press = TRUE
+	ELSE
+		keyboard.space_press = FALSE
+	ENDIF
 
 ENDFUNCTION

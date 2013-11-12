@@ -16,11 +16,11 @@ FUNCTION main:
 	sys_init()
 
 	WHILE TRUE
-	
+
 		sys()
-	
+
 		gui()
-	
+
 		SHOWSCREEN
 	WEND
 
