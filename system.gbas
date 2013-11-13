@@ -18,14 +18,26 @@ TYPE mouse_type
 	b2_press
 ENDTYPE
 
+TYPE debugging_type
+	fps_logging
+	fps_logsize
+ENDTYPE
+
 TYPE keyboard_type
 	space
 	space_press
 ENDTYPE
 
+TYPE fps_log_type
+	date$
+	log_fps
+ENDTYPE
+
 GLOBAL sys_settings AS settings_type
 GLOBAL mouse AS mouse_type
 GLOBAL keyboard AS keyboard_type
+GLOBAL debugging AS debugging_type
+GLOBAL fps_log[] AS fps_log_type
 
 
 FUNCTION sys_init:
@@ -122,5 +134,36 @@ FUNCTION sys_keyboard:
 	ELSE
 		keyboard.space_press = FALSE
 	ENDIF
+
+ENDFUNCTION
+
+FUNCTION sys_fps_counter:
+STATIC init_fps, old, count, count_fps
+LOCAL m AS fps_log_type
+
+	IF init_fps = FALSE
+		old = GETTIMERALL() + 1000
+		init_fps = TRUE
+	ENDIF
+
+	INC count, 1
+
+	IF old <= GETTIMERALL()
+		count_fps = count
+
+		IF debugging.fps_logging = TRUE
+
+			m.date$ = PLATFORMINFO$("TIME")
+			m.log_fps = count_fps
+
+			DIMPUSH fps_log[], m
+
+		ENDIF
+
+		count = 0
+		init_fps = FALSE
+	ENDIF
+
+	RETURN count_fps
 
 ENDFUNCTION
