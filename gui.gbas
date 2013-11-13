@@ -44,9 +44,9 @@ LOCAL alpha, aktuell, maximum
 	DRAWLINE sys_settings.resolution_x - 200, 100, sys_settings.resolution_x - 400, 100, RGB(255, 255, 255)
 
 	IF keyboard.space_press = TRUE
-		IF mouse.x >= sys_settings.resolution_x - 400
-			IF mouse.x <= sys_settings.resolution_x - 200 AND mouse.x >= sys_settings.resolution_x - 400
-				alpha = (((((sys_settings.resolution_x - 400) - mouse.x) * -1) * 98) / 200) / 100
+		IF mouse.x >= sys_settings.resolution_x / 2
+			IF mouse.x <= sys_settings.resolution_x - 200 AND mouse.x >= sys_settings.resolution_x / 2
+				alpha = (((((sys_settings.resolution_x / 2) - mouse.x) * -1) * 98) / ((sys_settings.resolution_x / 2) - 200)) / 100
 			ELSE
 				alpha = 0.98
 			ENDIF
