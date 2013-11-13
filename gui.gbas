@@ -41,26 +41,28 @@ ENDFUNCTION
 FUNCTION gui_draw_side_menu:
 LOCAL alpha, aktuell, maximum
 
+	DRAWLINE sys_settings.resolution_x - 200, 100, sys_settings.resolution_x - 400, 100, RGB(255, 255, 255)
+
 	IF keyboard.space_press = TRUE
-		IF mouse.x >= sys_settings.resolution_x - 300
-			IF mouse.x <= sys_settings.resolution_x - 200 AND mouse.x >= sys_settings.resolution_x - 300
-				alpha = (((((sys_settings.resolution_x - 300) - mouse.x) * -1) * 98) / 100) / 100
+		IF mouse.x >= sys_settings.resolution_x - 400
+			IF mouse.x <= sys_settings.resolution_x - 200 AND mouse.x >= sys_settings.resolution_x - 400
+				alpha = (((((sys_settings.resolution_x - 400) - mouse.x) * -1) * 98) / 200) / 100
 			ELSE
 				alpha = 0.98
 			ENDIF
-	
+
 		ENDIF
-	
+
 		ALPHAMODE -0.01 - alpha
-	
+
 		STARTPOLY
 			POLYVECTOR sys_settings.resolution_x - 200, 0, 0, 0, RGB(32, 32, 32)
 			POLYVECTOR sys_settings.resolution_x - 200, sys_settings.resolution_y, 0, 0, RGB(32, 32, 32)
 			POLYVECTOR sys_settings.resolution_x, sys_settings.resolution_y, 0, 0, RGB(0, 0, 0)
 			POLYVECTOR sys_settings.resolution_x, 0, 0, 0, RGB(0, 0, 0)
-	
+
 		ENDPOLY
-	
+
 		ALPHAMODE 0
 	ENDIF
 
