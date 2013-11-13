@@ -41,8 +41,6 @@ ENDFUNCTION
 FUNCTION gui_draw_side_menu:
 LOCAL alpha, aktuell, maximum
 
-	DRAWLINE sys_settings.resolution_x - 200, 100, sys_settings.resolution_x - 400, 100, RGB(255, 255, 255)
-
 	IF keyboard.space_press = TRUE
 		IF mouse.x >= sys_settings.resolution_x / 2
 			IF mouse.x <= sys_settings.resolution_x - 200 AND mouse.x >= sys_settings.resolution_x / 2
