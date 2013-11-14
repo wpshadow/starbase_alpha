@@ -142,7 +142,7 @@ FUNCTION sys_keyboard:
 ENDFUNCTION
 
 FUNCTION sys_fps_counter:
-STATIC init_fps, old, count, count_fps
+STATIC init_fps, old, count, count_fps, lang
 LOCAL m AS fps_log_type
 
 	IF init_fps = FALSE
@@ -161,6 +161,16 @@ LOCAL m AS fps_log_type
 			m.log_fps = count_fps
 
 			DIMPUSH fps_log[], m
+			
+			IF LEN(fps_log[]) > 10000
+				
+				DIMDEL fps_log[], 0
+				
+			ENDIF
+			
+			
+			
+			
 
 		ENDIF
 
@@ -182,16 +192,43 @@ LOCAL folder$[], tmp, ok, ok_dir, error$
 
 		IF ok = FALSE
 			TRY
-			
+
 				ok_dir = CREATEDIR(folder$[tmp])
 				
 				IF ok_dir = FALSE THEN THROW "1 Ordner " + folder$[tmp] + " konnte nicht generiert werden."
-				
+
 			CATCH error$
-				IF LEN(error$) > 0 THEN END
+				IF LEN(error$) > 0 THEN sys_logging(error$)
 			FINALLY
-				
+
 		ENDIF
 	NEXT
+
+ENDFUNCTION
+
+FUNCTION sys_logging: info$
+LOCAL num$[], num, tmp, lang, information$, output$
+	
+	tmp = SPLITSTR(info$, num$[], " ")
+	
+	num = num$[0]
+	lang = LEN(num$[0]) + 1
+	
+	information$ = MID$(info$, lang, -1)
+	
+	OPENFILE(0, "error.txt", -1)
+	
+	SELECT num
+	CASE 1
+		
+		output$ = PLATFORMINFO$("TIME") + " " + information$
+		
+		WRITELINE 0, output$
+		
+		CLOSEFILE 0
+		
+		END
+	
+	ENDSELECT
 
 ENDFUNCTION
