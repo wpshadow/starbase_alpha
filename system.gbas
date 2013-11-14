@@ -42,10 +42,10 @@ GLOBAL fps_log[] AS fps_log_type
 
 FUNCTION sys_init:
 
-	// Bildschirmüberprüfung	
+	// Bildschirmüberprüfung
 	sys_check_resolution()
 	sys_screen_settings()
-	
+
 	// Ordnerüberprüfung
 	sys_check_folders()
 
@@ -173,15 +173,24 @@ LOCAL m AS fps_log_type
 ENDFUNCTION
 
 FUNCTION sys_check_folders:
-LOCAL folder$[], tmp, ok
+LOCAL folder$[], tmp, ok, ok_dir, error$
 
 	DIMDATA	folder$[], "media", "logs", "media/gfx", "media/sfx"
-	
+
 	FOR tmp = 0 TO LEN(folder$[]) - 1
 		ok = DOESDIREXIST(folder$[tmp])
-		
+
 		IF ok = FALSE
-			CREATEDIR(folder$[tmp])
+			TRY
+			
+				ok_dir = CREATEDIR(folder$[tmp])
+				
+				IF ok_dir = FALSE THEN THROW "1 Ordner " + folder$[tmp] + " konnte nicht generiert werden."
+				
+			CATCH error$
+				IF LEN(error$) > 0 THEN END
+			FINALLY
+				
 		ENDIF
 	NEXT
 
