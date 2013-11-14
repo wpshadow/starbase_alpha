@@ -42,8 +42,12 @@ GLOBAL fps_log[] AS fps_log_type
 
 FUNCTION sys_init:
 
+	// Bildschirmüberprüfung	
 	sys_check_resolution()
 	sys_screen_settings()
+	
+	// Ordnerüberprüfung
+	sys_check_folders()
 
 ENDFUNCTION
 
@@ -165,5 +169,20 @@ LOCAL m AS fps_log_type
 	ENDIF
 
 	RETURN count_fps
+
+ENDFUNCTION
+
+FUNCTION sys_check_folders:
+LOCAL folder$[], tmp, ok
+
+	DIMDATA	folder$[], "media", "logs", "media/gfx", "media/sfx"
+	
+	FOR tmp = 0 TO LEN(folder$[]) - 1
+		ok = DOESDIREXIST(folder$[tmp])
+		
+		IF ok = FALSE
+			CREATEDIR(folder$[tmp])
+		ENDIF
+	NEXT
 
 ENDFUNCTION
