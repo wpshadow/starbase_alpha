@@ -12,6 +12,9 @@ FUNCTION gui:
 
 	gui_draw_side_menu()
 
+
+	PRINT sys_fps_counter(), 0, 0
+
 	gui_draw_mouse(mouse.x, mouse.y)
 
 ENDFUNCTION
@@ -54,8 +57,8 @@ LOCAL alpha, aktuell, maximum
 		ALPHAMODE -0.01 - alpha
 
 		STARTPOLY
-			POLYVECTOR sys_settings.resolution_x - 200, 0, 0, 0, RGB(32, 32, 32)
-			POLYVECTOR sys_settings.resolution_x - 200, sys_settings.resolution_y, 0, 0, RGB(32, 32, 32)
+			POLYVECTOR sys_settings.resolution_x - 200, 0, 0, 0, RGB(64, 64, 64)
+			POLYVECTOR sys_settings.resolution_x - 200, sys_settings.resolution_y, 0, 0, RGB(64, 64, 64)
 			POLYVECTOR sys_settings.resolution_x, sys_settings.resolution_y, 0, 0, RGB(0, 0, 0)
 			POLYVECTOR sys_settings.resolution_x, 0, 0, 0, RGB(0, 0, 0)
 
