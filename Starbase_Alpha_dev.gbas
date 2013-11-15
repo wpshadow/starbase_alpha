@@ -20,9 +20,41 @@ FUNCTION main:
 		sys()
 
 		gui()
+		
+		PRINT sys_fps_counter(), 0, 0
 
 		SHOWSCREEN
 	WEND
 
 
 ENDFUNCTION
+
+
+
+SUB GLB_ON_QUIT:
+LOCAL output$[], tmp$, time$[]
+
+	IF sys_settings.debugging = 1
+
+		SPLITSTR(PLATFORMINFO$("TIME"), output$[], " ")
+		SPLITSTR(output$[1], time$[], ":")
+
+		OPENFILE(0, "logs/fps_" + output$[0] + "_" + time$[0] + "_" + time$[1] + "_" + time$[2] + ".txt", -1)
+
+			IF LEN(fps_log[]) > 0
+
+				FOREACH m IN fps_log[]
+
+					tmp$ = m.date$ + " | fps: " + m.log_fps
+
+					WRITELINE 0, tmp$
+
+				NEXT
+
+			ENDIF
+
+		CLOSEFILE 0
+
+	ENDIF
+
+ENDSUB
