@@ -7,6 +7,8 @@ TYPE settings_type
 	resolution_x
 	resolution_y
 	fullscreen
+
+	debugging
 ENDTYPE
 
 TYPE mouse_type
@@ -21,6 +23,7 @@ ENDTYPE
 TYPE debugging_type
 	fps_logging
 	fps_logsize
+	fps_output
 ENDTYPE
 
 TYPE keyboard_type
@@ -42,8 +45,14 @@ GLOBAL fps_log[] AS fps_log_type
 
 FUNCTION sys_init:
 
+	AUTOPAUSE FALSE
+
+	// Bildschirmüberprüfung
 	sys_check_resolution()
 	sys_screen_settings()
+
+	// Ordnerüberprüfung
+	sys_check_folders()
 
 ENDFUNCTION
 
@@ -57,6 +66,7 @@ LOCAL file_exist
 			sys_settings.resolution_x = INIGET$("options", "res_x")
 			sys_settings.resolution_y = INIGET$("options", "res_y")
 			sys_settings.fullscreen = INIGET$("options", "fulls")
+			sys_settings.debugging = INIGET$("options", "debug")
 		INIOPEN ""
 	ENDIF
 
@@ -64,6 +74,7 @@ LOCAL file_exist
 		sys_settings.resolution_x = 1024
 		sys_settings.resolution_y = 768
 		sys_settings.fullscreen = FALSE
+		sys_settings.debugging = 0
 
 		sys_create_options()
 	ENDIF
@@ -82,6 +93,7 @@ FUNCTION sys_create_options:
 		INIPUT "options", "res_x", "1024"
 		INIPUT "options", "res_y", "768"
 		INIPUT "options", "fulls", "0"
+		INIPUT "options", "debug", "0"
 	INIOPEN ""
 
 ENDFUNCTION
@@ -125,6 +137,11 @@ FUNCTION sys:
 	sys_mouse()
 	sys_keyboard()
 
+	IF sys_settings.debugging = TRUE
+		debugging.fps_logging = TRUE
+		sys_fps_counter()
+	ENDIF
+
 ENDFUNCTION
 
 FUNCTION sys_keyboard:
@@ -138,7 +155,7 @@ FUNCTION sys_keyboard:
 ENDFUNCTION
 
 FUNCTION sys_fps_counter:
-STATIC init_fps, old, count, count_fps
+STATIC init_fps, old, count, count_fps, lang
 LOCAL m AS fps_log_type
 
 	IF init_fps = FALSE
@@ -148,15 +165,24 @@ LOCAL m AS fps_log_type
 
 	INC count, 1
 
-	IF old <= GETTIMERALL()
+	IF GETTIMERALL() >= old
 		count_fps = count
+		debugging.fps_output = count
 
 		IF debugging.fps_logging = TRUE
 
 			m.date$ = PLATFORMINFO$("TIME")
 			m.log_fps = count_fps
 
+
+
 			DIMPUSH fps_log[], m
+
+			IF LEN(fps_log[]) > 10000
+
+				DIMDEL fps_log[], 0
+
+			ENDIF
 
 		ENDIF
 
@@ -165,5 +191,56 @@ LOCAL m AS fps_log_type
 	ENDIF
 
 	RETURN count_fps
+
+ENDFUNCTION
+
+FUNCTION sys_check_folders:
+LOCAL folder$[], tmp, ok, ok_dir, error$
+
+	DIMDATA	folder$[], "media", "logs", "media/gfx", "media/sfx", "media/fonts"
+
+	FOR tmp = 0 TO LEN(folder$[]) - 1
+		ok = DOESDIREXIST(folder$[tmp])
+
+		IF ok = FALSE
+			TRY
+
+				ok_dir = CREATEDIR(folder$[tmp])
+
+				IF ok_dir = FALSE THEN THROW "1 Ordner " + folder$[tmp] + " konnte nicht generiert werden."
+
+			CATCH error$
+				IF LEN(error$) > 0 THEN sys_logging(error$)
+			FINALLY
+
+		ENDIF
+	NEXT
+
+ENDFUNCTION
+
+FUNCTION sys_logging: info$
+LOCAL num$[], num, tmp, lang, information$, output$
+
+	tmp = SPLITSTR(info$, num$[], " ")
+
+	num = num$[0]
+	lang = LEN(num$[0]) + 1
+
+	information$ = MID$(info$, lang, -1)
+
+	OPENFILE(0, "error.txt", -1)
+
+	SELECT num
+	CASE 1
+
+		output$ = PLATFORMINFO$("TIME") + " " + information$
+
+		WRITELINE 0, output$
+
+		CLOSEFILE 0
+
+		END
+
+	ENDSELECT
 
 ENDFUNCTION
