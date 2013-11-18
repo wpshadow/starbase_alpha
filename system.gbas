@@ -197,7 +197,7 @@ ENDFUNCTION
 FUNCTION sys_check_folders:
 LOCAL folder$[], tmp, ok, ok_dir, error$
 
-	DIMDATA	folder$[], "media", "logs", "media/gfx", "media/sfx"
+	DIMDATA	folder$[], "media", "logs", "media/gfx", "media/sfx", "media/fonts"
 
 	FOR tmp = 0 TO LEN(folder$[]) - 1
 		ok = DOESDIREXIST(folder$[tmp])

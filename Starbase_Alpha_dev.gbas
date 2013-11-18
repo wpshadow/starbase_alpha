@@ -20,8 +20,6 @@ FUNCTION main:
 		sys()
 
 		gui()
-		
-		PRINT debugging.fps_output, 0, 0
 
 		SHOWSCREEN
 	WEND
