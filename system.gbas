@@ -23,6 +23,7 @@ ENDTYPE
 TYPE debugging_type
 	fps_logging
 	fps_logsize
+	fps_output
 ENDTYPE
 
 TYPE keyboard_type
@@ -135,7 +136,7 @@ FUNCTION sys:
 
 	sys_mouse()
 	sys_keyboard()
-	
+
 	IF sys_settings.debugging = TRUE
 		debugging.fps_logging = TRUE
 		sys_fps_counter()
@@ -164,17 +165,16 @@ LOCAL m AS fps_log_type
 
 	INC count, 1
 
-	PRINT count, 0, 20
-
 	IF GETTIMERALL() >= old
 		count_fps = count
+		debugging.fps_output = count
 
 		IF debugging.fps_logging = TRUE
 
 			m.date$ = PLATFORMINFO$("TIME")
 			m.log_fps = count_fps
-			
-			
+
+
 
 			DIMPUSH fps_log[], m
 

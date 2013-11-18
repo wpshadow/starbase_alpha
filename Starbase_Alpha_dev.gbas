@@ -21,7 +21,7 @@ FUNCTION main:
 
 		gui()
 		
-		PRINT sys_fps_counter(), 0, 0
+		PRINT debugging.fps_output, 0, 0
 
 		SHOWSCREEN
 	WEND
