@@ -13,7 +13,8 @@ FUNCTION gui:
 	gui_draw_side_menu()
 
 
-	PRINT sys_fps_counter(), 0, 0
+
+	sys_debug_console()
 
 	gui_draw_mouse(mouse.x, mouse.y)
 

@@ -24,6 +24,8 @@ TYPE debugging_type
 	fps_logging
 	fps_logsize
 	fps_output
+	
+	show_debugging_window
 ENDTYPE
 
 TYPE keyboard_type
@@ -36,11 +38,16 @@ TYPE fps_log_type
 	log_fps
 ENDTYPE
 
+TYPE image_type
+	id$
+ENDTYPE
+
 GLOBAL sys_settings AS settings_type
 GLOBAL mouse AS mouse_type
 GLOBAL keyboard AS keyboard_type
 GLOBAL debugging AS debugging_type
 GLOBAL fps_log[] AS fps_log_type
+GLOBAL image[] AS image_type
 
 
 FUNCTION sys_init:
@@ -145,12 +152,31 @@ FUNCTION sys:
 ENDFUNCTION
 
 FUNCTION sys_keyboard:
+LOCAL button_c_press, button_c
+STATIC button_c_tmp
 
 	IF KEY(57) = 1
 		keyboard.space_press = TRUE
 	ELSE
 		keyboard.space_press = FALSE
 	ENDIF
+	
+	IF KEY(46) = TRUE THEN button_c_press = TRUE
+	
+	IF button_c_press = FALSE THEN button_c = FALSE
+	IF button_c_press = TRUE THEN button_c_tmp = TRUE
+	IF button_c_press = FALSE AND button_c_tmp = TRUE
+		button_c = TRUE
+		button_c_tmp = FALSE
+	ENDIF
+	
+	
+
+	IF KEY(29) = TRUE AND KEY(42) = TRUE AND sys_settings.debugging = TRUE
+		IF button_c = TRUE THEN INC debugging.show_debugging_window, 1
+		IF debugging.show_debugging_window > 1 THEN debugging.show_debugging_window = 0
+	ENDIF
+
 
 ENDFUNCTION
 
@@ -243,4 +269,21 @@ LOCAL num$[], num, tmp, lang, information$, output$
 
 	ENDSELECT
 
+ENDFUNCTION
+
+FUNCTION sys_debug_console:
+
+	IF debugging.show_debugging_window = 1
+	
+		ALPHAMODE - 0.5
+		
+		DRAWRECT 10, 10, 200, 200, RGB(32, 32, 32)
+		
+		PRINT "erfolgreich", 15, 10
+		PRINT "FPS: " + debugging.fps_output, 15, 20
+	
+		ALPHAMODE 0
+	
+	ENDIF
+	
 ENDFUNCTION
