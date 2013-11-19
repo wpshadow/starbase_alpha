@@ -14,8 +14,6 @@ main()
 FUNCTION main:
 
 	sys_init()
-	
-	//testing
 
 	WHILE TRUE
 
