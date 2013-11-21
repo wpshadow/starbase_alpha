@@ -9,6 +9,7 @@ TYPE settings_type
 	fullscreen
 
 	debugging
+	fps_logging
 ENDTYPE
 
 TYPE mouse_type
@@ -21,10 +22,10 @@ TYPE mouse_type
 ENDTYPE
 
 TYPE debugging_type
-	fps_logging
+	//fps_logging
 	fps_logsize
 	fps_output
-	
+
 	show_debugging_window
 ENDTYPE
 
@@ -74,6 +75,7 @@ LOCAL file_exist
 			sys_settings.resolution_y = INIGET$("options", "res_y")
 			sys_settings.fullscreen = INIGET$("options", "fulls")
 			sys_settings.debugging = INIGET$("options", "debug")
+			sys_settings.fps_logging = INIGET$("options", "fpslg")
 		INIOPEN ""
 	ENDIF
 
@@ -82,6 +84,7 @@ LOCAL file_exist
 		sys_settings.resolution_y = 768
 		sys_settings.fullscreen = FALSE
 		sys_settings.debugging = 0
+		sys_settings.fps_logging = 0
 
 		sys_create_options()
 	ENDIF
@@ -101,6 +104,7 @@ FUNCTION sys_create_options:
 		INIPUT "options", "res_y", "768"
 		INIPUT "options", "fulls", "0"
 		INIPUT "options", "debug", "0"
+		INIPUT "options", "fpslg", "0"
 	INIOPEN ""
 
 ENDFUNCTION
@@ -145,7 +149,7 @@ FUNCTION sys:
 	sys_keyboard()
 
 	IF sys_settings.debugging = TRUE
-		debugging.fps_logging = TRUE
+		//debugging.fps_logging = TRUE
 		sys_fps_counter()
 	ENDIF
 
@@ -160,17 +164,17 @@ STATIC button_c_tmp
 	ELSE
 		keyboard.space_press = FALSE
 	ENDIF
-	
+
 	IF KEY(46) = TRUE THEN button_c_press = TRUE
-	
+
 	IF button_c_press = FALSE THEN button_c = FALSE
 	IF button_c_press = TRUE THEN button_c_tmp = TRUE
 	IF button_c_press = FALSE AND button_c_tmp = TRUE
 		button_c = TRUE
 		button_c_tmp = FALSE
 	ENDIF
-	
-	
+
+
 
 	IF KEY(29) = TRUE AND KEY(42) = TRUE AND sys_settings.debugging = TRUE
 		IF button_c = TRUE THEN INC debugging.show_debugging_window, 1
@@ -195,7 +199,7 @@ LOCAL m AS fps_log_type
 		count_fps = count
 		debugging.fps_output = count
 
-		IF debugging.fps_logging = TRUE
+		IF sys_settings.fps_logging = TRUE
 
 			m.date$ = PLATFORMINFO$("TIME")
 			m.log_fps = count_fps
@@ -274,16 +278,16 @@ ENDFUNCTION
 FUNCTION sys_debug_console:
 
 	IF debugging.show_debugging_window = 1
-	
-		ALPHAMODE - 0.5
-		
+
+		ALPHAMODE - 0.75
+
 		DRAWRECT 10, 10, 200, 200, RGB(32, 32, 32)
-		
+
 		PRINT "erfolgreich", 15, 10
 		PRINT "FPS: " + debugging.fps_output, 15, 20
-	
+
 		ALPHAMODE 0
-	
+
 	ENDIF
-	
+
 ENDFUNCTION

@@ -32,7 +32,7 @@ ENDFUNCTION
 SUB GLB_ON_QUIT:
 LOCAL output$[], tmp$, time$[]
 
-	IF sys_settings.debugging = 1
+	IF sys_settings.fps_logging = 1
 
 		SPLITSTR(PLATFORMINFO$("TIME"), output$[], " ")
 		SPLITSTR(output$[1], time$[], ":")
