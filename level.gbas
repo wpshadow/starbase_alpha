@@ -7,6 +7,12 @@
 // SETCURRENTDIR("Media") // go to media files
 
 
+FUNCTION lvl:
+
+
+
+ENDFUNCTION
+
 
 
 FUNCTION lvl_draw_underground:

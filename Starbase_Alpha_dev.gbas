@@ -18,7 +18,7 @@ FUNCTION main:
 	WHILE TRUE
 
 		sys()
-
+		lvl()
 		gui()
 
 		SHOWSCREEN
