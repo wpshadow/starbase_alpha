@@ -22,7 +22,6 @@ TYPE mouse_type
 ENDTYPE
 
 TYPE debugging_type
-	//fps_logging
 	fps_logsize
 	fps_output
 
@@ -270,7 +269,7 @@ LOCAL num$[], num, tmp, lang, information$, output$
 		CLOSEFILE 0
 
 		END
-		
+
 	ENDSELECT
 
 ENDFUNCTION
@@ -292,6 +291,79 @@ FUNCTION sys_debug_console:
 
 ENDFUNCTION
 
+FUNCTION sys_loader:
+
+	//sys_loader_ini("media/gfx/robot.ini")
+	sys_loader_ini("media/gfx/stars.ini")
+	
+	
+	
+
+ENDFUNCTION
+
+FUNCTION sys_loader_ini: file$
+LOCAL s AS star_sprite_type, r AS robot_sprite_type
+LOCAL ok, tmp, tmp$, pic$, lang, file_load$
+
+	ok = DOESFILEEXIST(file$)
+	
+	IF ok = TRUE 
+		
+		INIOPEN file$
+		
+			lang = INIGET$("pic", "count")
+			
+			FOR tmp = 1 TO lang
+			
+				tmp$ = tmp
+	
+				pic$ = "pic_" + tmp$
+	
+				file_load$ = INIGET$("pic", pic$)
+				
+	
+						
+				SELECT file$
+				CASE "media/gfx/stars.ini"
+					s.id = sys_load_sprite(file_load$)
+					
+					DEBUG s.id
+					
+					DIMPUSH star_sprite[], s
+					
+				ENDSELECT
+			
+			NEXT
+				
+		INIOPEN ""
+
+	ELSE
+	
+		sys_logging("1 Datei " + file$ + " wurde nicht gefunden.")
+	
+	ENDIF
+
+//		INIOPEN file$
+//		//lang = INIGET$("pic", "count")
+//
+//		FOR tmp = 1 TO lang
+//			tmp$ = tmp
+//
+//			pic$ = "pic_" + tmp$
+//
+//			file$ = INIGET$("pic", pic$)
+//
+//			//r.id$ = loader_picture$(file$)
+//
+//			//DIMPUSH robot_pics[], r
+//
+//
+//		NEXT
+//
+//	INIOPEN ""
+
+ENDFUNCTION
+
 FUNCTION sys_load_sprite: file$
 LOCAL available, lang, m AS image_type, ok
 
@@ -300,21 +372,21 @@ LOCAL available, lang, m AS image_type, ok
 	IF ok = TRUE
 
 		available = GENSPRITE()
-		
+
 		lang = LEN(image[])
-		
+
 		LOADSPRITE file$, available
-		
+
 		m.id$ = available
-		
+
 		DIMPUSH image[], m
-		
+
 		RETURN lang
-		
+
 	ELSE
-		
+
 		sys_logging("1 Datei " + file$ + " wurde nicht gefunden.")
-		
+
 	ENDIF
 
 ENDFUNCTION

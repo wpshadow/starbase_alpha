@@ -14,19 +14,17 @@ main()
 FUNCTION main:
 LOCAL id
 	sys_init()
+	sys_loader()
 
-		id = sys_load_sprite("media/gfx/stars/star_0.png")
-		DEBUG id
-
-		id = sys_load_sprite("media/gfx/stars/star_1.png")
-		DEBUG id
 
 	WHILE TRUE
 
 		sys()
-		
-		DRAWSPRITE image[0].id$, 0, 0
-		
+
+		DRAWSPRITE image[star_sprite[0].id].id$, 0, 0
+		DRAWSPRITE image[star_sprite[1].id].id$, 32, 0
+		DRAWSPRITE image[star_sprite[2].id].id$, 64, 0
+
 		lvl()
 		gui()
 

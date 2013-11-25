@@ -6,6 +6,15 @@
 
 // SETCURRENTDIR("Media") // go to media files
 
+TYPE star_sprite_type
+	id
+ENDTYPE
+
+TYPE robot_sprite_type
+	id
+ENDTYPE
+
+GLOBAL star_sprite[] AS star_sprite_type, robot_sprite[] AS robot_sprite_type
 
 FUNCTION lvl:
 
