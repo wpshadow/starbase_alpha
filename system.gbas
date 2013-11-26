@@ -293,11 +293,10 @@ ENDFUNCTION
 
 FUNCTION sys_loader:
 
-	//sys_loader_ini("media/gfx/robot.ini")
 	sys_loader_ini("media/gfx/stars.ini")
-	
-	
-	
+	sys_loader_ini("media/gfx/robot.ini")
+
+
 
 ENDFUNCTION
 
@@ -306,41 +305,44 @@ LOCAL s AS star_sprite_type, r AS robot_sprite_type
 LOCAL ok, tmp, tmp$, pic$, lang, file_load$
 
 	ok = DOESFILEEXIST(file$)
-	
-	IF ok = TRUE 
-		
+
+	IF ok = TRUE
+
 		INIOPEN file$
-		
+
 			lang = INIGET$("pic", "count")
-			
+
 			FOR tmp = 1 TO lang
-			
+
 				tmp$ = tmp
-	
+
 				pic$ = "pic_" + tmp$
-	
+
 				file_load$ = INIGET$("pic", pic$)
-				
-	
-						
+
+
+
 				SELECT file$
 				CASE "media/gfx/stars.ini"
+
 					s.id = sys_load_sprite(file_load$)
-					
-					DEBUG s.id
-					
 					DIMPUSH star_sprite[], s
-					
+
+				CASE "media/gfx/robot.ini"
+
+					r.id = sys_load_sprite(file_load$)
+					DIMPUSH robot_sprite[], r
+
 				ENDSELECT
-			
+
 			NEXT
-				
+
 		INIOPEN ""
 
 	ELSE
-	
+
 		sys_logging("1 Datei " + file$ + " wurde nicht gefunden.")
-	
+
 	ENDIF
 
 //		INIOPEN file$

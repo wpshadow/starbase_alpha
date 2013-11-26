@@ -21,9 +21,7 @@ LOCAL id
 
 		sys()
 
-		DRAWSPRITE image[star_sprite[0].id].id$, 0, 0
-		DRAWSPRITE image[star_sprite[1].id].id$, 32, 0
-		DRAWSPRITE image[star_sprite[2].id].id$, 64, 0
+
 
 		lvl()
 		gui()
