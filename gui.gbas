@@ -6,9 +6,16 @@
 
 // SETCURRENTDIR("Media") // go to media files
 
+TYPE energy_bar_type
+	size
+ENDTYPE
+
+GLOBAL gui_energy_bar AS energy_bar_type
 
 
 FUNCTION gui:
+
+	gui_draw_energy_bar()
 
 	gui_draw_side_menu()
 
@@ -67,5 +74,29 @@ LOCAL alpha, aktuell, maximum
 
 		ALPHAMODE 0
 	ENDIF
+
+ENDFUNCTION
+
+FUNCTION gui_draw_energy_bar:
+LOCAL size
+
+	SELECT gui_energy_bar.size
+	CASE 1
+		size = sys_settings.resolution_x * 0.25
+	CASE 2
+		size = sys_settings.resolution_x * 0.5
+	CASE 3
+		size = sys_settings.resolution_x * 0.75
+	DEFAULT
+		size = sys_settings.resolution_x * 0.5
+	ENDSELECT
+	
+	DRAWRECT (sys_settings.resolution_x / 2) - (size / 2), 0, size, 15, RGB(32, 32, 32)
+
+ENDFUNCTION
+
+FUNCTION gui_draw_border: x, y, l, b
+
+	
 
 ENDFUNCTION
