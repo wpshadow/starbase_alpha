@@ -8,6 +8,9 @@
 
 TYPE energy_bar_type
 	size
+	value_current
+	value_maximum
+	value_critical
 ENDTYPE
 
 GLOBAL gui_energy_bar AS energy_bar_type
@@ -78,7 +81,7 @@ LOCAL alpha, aktuell, maximum
 ENDFUNCTION
 
 FUNCTION gui_draw_energy_bar:
-LOCAL size
+LOCAL size, prozent, bar_size, color_size, crit_size
 
 	SELECT gui_energy_bar.size
 	CASE 1
@@ -90,13 +93,44 @@ LOCAL size
 	DEFAULT
 		size = sys_settings.resolution_x * 0.5
 	ENDSELECT
-	
+
 	DRAWRECT (sys_settings.resolution_x / 2) - (size / 2), 0, size, 15, RGB(32, 32, 32)
+	gui_draw_border((sys_settings.resolution_x / 2) - (size / 2), 0, size, 15)
+
+	// Ausgabebalken
+
+	prozent = ((gui_energy_bar.value_current * 100) / gui_energy_bar.value_maximum) / 100
+	bar_size = (size - 1) * prozent
+	color_size = 128 * prozent
+
+	STARTPOLY
+		POLYVECTOR (sys_settings.resolution_x / 2) - (size / 2) + 1, 1, 0, 0, RGB(0, 0, 64)
+		POLYVECTOR (sys_settings.resolution_x / 2) - (size / 2) + 1, 14, 0, 0, RGB(0, 0, 64)
+
+		POLYVECTOR (sys_settings.resolution_x / 2) - (size / 2) + bar_size, 14, 0, 0, RGB(0, color_size, 127 + color_size)
+		POLYVECTOR (sys_settings.resolution_x / 2) - (size / 2) + bar_size, 1, 0, 0, RGB(0, color_size, 127 + color_size)
+	ENDPOLY
+	
+	DRAWLINE (sys_settings.resolution_x / 2) - (size / 2) + bar_size, 1, (sys_settings.resolution_x / 2) - (size / 2) + bar_size, 14, RGB(0, 128, 255)
+	
+	prozent = ((gui_energy_bar.value_critical * 100) / gui_energy_bar.value_maximum) / 100
+	crit_size = (size - 1) * prozent
+	
+	STARTPOLY
+		POLYVECTOR (sys_settings.resolution_x / 2) - (size / 2) + 1, 1, 0, 0, RGB(64, 0, 0)
+		POLYVECTOR (sys_settings.resolution_x / 2) - (size / 2) + 1, 14, 0, 0, RGB(64, 0, 0)
+
+		POLYVECTOR (sys_settings.resolution_x / 2) - (size / 2) + crit_size, 14, 0, 0, RGB(255, 0, 0)
+		POLYVECTOR (sys_settings.resolution_x / 2) - (size / 2) + crit_size, 1, 0, 0, RGB(255, 0, 0)
+	ENDPOLY	
 
 ENDFUNCTION
 
 FUNCTION gui_draw_border: x, y, l, b
 
-	
+	DRAWLINE x, y, x + l - 1, y, RGB(255, 255, 255)
+	DRAWLINE x, y + b - 1, x + l - 1, y + b - 1, RGB(128, 128, 128)
+	DRAWLINE x, y, x, y + b - 1, RGB(255, 255, 255)
+	DRAWLINE x + l - 1, y, x + l - 1, y + b - 1, RGB(128, 128, 128)
 
 ENDFUNCTION

@@ -61,6 +61,11 @@ FUNCTION sys_init:
 	// Ordnerüberprüfung
 	sys_check_folders()
 
+	gui_energy_bar.size = 2
+	gui_energy_bar.value_current = 100
+	gui_energy_bar.value_maximum = 100
+	gui_energy_bar.value_critical = 15
+
 ENDFUNCTION
 
 FUNCTION sys_check_resolution:
