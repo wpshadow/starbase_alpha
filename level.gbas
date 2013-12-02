@@ -14,13 +14,24 @@ TYPE robot_sprite_type
 	id
 ENDTYPE
 
-GLOBAL star_sprite[] AS star_sprite_type, robot_sprite[] AS robot_sprite_type
+TYPE ground_sprite_type
+	id
+ENDTYPE
+
+TYPE lvl_ground_type
+	id
+	x
+	y
+ENDTYPE
+
+
+GLOBAL star_sprite[] AS star_sprite_type, robot_sprite[] AS robot_sprite_type, ground_sprite[] AS ground_sprite_type
 
 FUNCTION lvl:
 
 	lvl_draw_underground()
 
-	//DRAWSPRITE image[robot_sprite[0].id].id$, 0, 0
+
 
 ENDFUNCTION
 
@@ -34,10 +45,23 @@ LOCAL tmp_x, tmp_y
 
 	FOR tmp_y = 0 TO (sys_settings.resolution_y / 32)
 		FOR tmp_x = 0 TO (sys_settings.resolution_x / 32)
-			DRAWSPRITE image[star_sprite[0].id].id$, tmp_x * 32, tmp_y * 32
+			DRAWSPRITE image[ground_sprite[0].id].id$, tmp_x * 32, tmp_y * 32
 		NEXT
 	NEXT
+
+	DRAWSPRITE image[ground_sprite[0].id].id$, 0, 0
 
 
 ENDFUNCTION
 
+FUNCTION lvl_draw_ground:
+
+
+
+ENDFUNCTION
+
+FUNCTION lvl_generate_level:
+
+
+
+ENDFUNCTION

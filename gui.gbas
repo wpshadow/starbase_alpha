@@ -110,19 +110,19 @@ LOCAL size, prozent, bar_size, color_size, crit_size
 		POLYVECTOR (sys_settings.resolution_x / 2) - (size / 2) + bar_size, 14, 0, 0, RGB(0, color_size, 127 + color_size)
 		POLYVECTOR (sys_settings.resolution_x / 2) - (size / 2) + bar_size, 1, 0, 0, RGB(0, color_size, 127 + color_size)
 	ENDPOLY
-	
+
 	DRAWLINE (sys_settings.resolution_x / 2) - (size / 2) + bar_size, 1, (sys_settings.resolution_x / 2) - (size / 2) + bar_size, 14, RGB(0, 128, 255)
-	
+
 	prozent = ((gui_energy_bar.value_critical * 100) / gui_energy_bar.value_maximum) / 100
 	crit_size = (size - 1) * prozent
-	
+
 	STARTPOLY
 		POLYVECTOR (sys_settings.resolution_x / 2) - (size / 2) + 1, 1, 0, 0, RGB(64, 0, 0)
 		POLYVECTOR (sys_settings.resolution_x / 2) - (size / 2) + 1, 14, 0, 0, RGB(64, 0, 0)
 
 		POLYVECTOR (sys_settings.resolution_x / 2) - (size / 2) + crit_size, 14, 0, 0, RGB(255, 0, 0)
 		POLYVECTOR (sys_settings.resolution_x / 2) - (size / 2) + crit_size, 1, 0, 0, RGB(255, 0, 0)
-	ENDPOLY	
+	ENDPOLY
 
 ENDFUNCTION
 

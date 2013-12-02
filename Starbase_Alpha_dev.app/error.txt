@@ -1,4 +1,2 @@
-2013-11-15 00:15:27 Ordner media/sfx konnte nicht generiert werden.
-erfolgreich
-2013-11-25 23:27:16 Datei NO_DATA wurde nicht gefunden.
-2013-11-25 23:31:55 Datei NO_DATA wurde nicht gefunden.
+2013-12-02 15:02:54 Datei media/gfx/stars.ini wurde nicht gefunden.
+2013-12-02 15:02:59 Datei media/gfx/stars.ini wurde nicht gefunden.

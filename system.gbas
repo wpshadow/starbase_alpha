@@ -300,13 +300,14 @@ FUNCTION sys_loader:
 
 	sys_loader_ini("media/gfx/stars.ini")
 	sys_loader_ini("media/gfx/robot.ini")
+	sys_loader_ini("media/gfx/ground.ini")
 
 
 
 ENDFUNCTION
 
 FUNCTION sys_loader_ini: file$
-LOCAL s AS star_sprite_type, r AS robot_sprite_type
+LOCAL s AS star_sprite_type, r AS robot_sprite_type, g AS ground_sprite_type
 LOCAL ok, tmp, tmp$, pic$, lang, file_load$
 
 	ok = DOESFILEEXIST(file$)
@@ -337,6 +338,11 @@ LOCAL ok, tmp, tmp$, pic$, lang, file_load$
 
 					r.id = sys_load_sprite(file_load$)
 					DIMPUSH robot_sprite[], r
+
+				CASE "media/gfx/ground.ini"
+					
+					g.id = sys_load_sprite(file_load$)
+					DIMPUSH ground_sprite[], g
 
 				ENDSELECT
 
