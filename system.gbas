@@ -297,11 +297,43 @@ FUNCTION sys_debug_console:
 ENDFUNCTION
 
 FUNCTION sys_loader:
+LOCAL ok, tmp, tmp$, lang, file$
+LOCAL files$[]
 
-	sys_loader_ini("media/gfx/stars.ini")
-	sys_loader_ini("media/gfx/robot.ini")
-	sys_loader_ini("media/gfx/ground.ini")
 
+	ok = DOESFILEEXIST("media/gfx/gfx.ini")
+
+	IF ok = TRUE
+
+		INIOPEN "media/gfx/gfx.ini"
+
+			lang = INIGET$("file", "count")
+			
+			DIM files$[lang]
+
+
+				FOR tmp = 1 TO lang
+					tmp$ = tmp
+
+					file$ = "file_" + tmp$
+
+					files$[tmp - 1] = INIGET$("file", file$)
+
+				NEXT
+				
+		INIOPEN ""
+		
+		FOR tmp = 1 TO lang
+		
+			sys_loader_ini(files$[tmp - 1])
+		
+		NEXT
+
+	ELSE
+
+		sys_logging("1 Datei " + file$ + " wurde nicht gefunden.")
+
+	ENDIF
 
 
 ENDFUNCTION
@@ -340,7 +372,7 @@ LOCAL ok, tmp, tmp$, pic$, lang, file_load$
 					DIMPUSH robot_sprite[], r
 
 				CASE "media/gfx/ground.ini"
-					
+
 					g.id = sys_load_sprite(file_load$)
 					DIMPUSH ground_sprite[], g
 

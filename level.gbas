@@ -49,7 +49,7 @@ LOCAL tmp_x, tmp_y
 		NEXT
 	NEXT
 
-	DRAWSPRITE image[ground_sprite[0].id].id$, 0, 0
+	//DRAWSPRITE image[ground_sprite[0].id].id$, 0, 0
 
 
 ENDFUNCTION
