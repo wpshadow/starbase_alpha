@@ -308,7 +308,7 @@ LOCAL files$[]
 		INIOPEN "media/gfx/gfx.ini"
 
 			lang = INIGET$("file", "count")
-			
+
 			DIM files$[lang]
 
 
@@ -320,13 +320,17 @@ LOCAL files$[]
 					files$[tmp - 1] = INIGET$("file", file$)
 
 				NEXT
-				
+
 		INIOPEN ""
-		
+
 		FOR tmp = 1 TO lang
-		
+
+			PRINT tmp, 0, 0
+			sys_draw_loading_bar(tmp, lang)
+			SHOWSCREEN
+
 			sys_loader_ini(files$[tmp - 1])
-		
+
 		NEXT
 
 	ELSE
@@ -433,5 +437,19 @@ LOCAL available, lang, m AS image_type, ok
 		sys_logging("1 Datei " + file$ + " wurde nicht gefunden.")
 
 	ENDIF
+
+
+ENDFUNCTION
+
+FUNCTION sys_draw_loading_bar: aktuell, maximum
+LOCAL lang, hoch, prozent
+
+	prozent = aktuell / maximum
+
+	lang = sys_settings.resolution_x / 2
+	hoch = sys_settings.resolution_y / 2
+
+	DRAWRECT sys_settings.resolution_x / 4, hoch - 15, lang, 30, RGB(32, 32, 32)
+	DRAWRECT sys_settings.resolution_x / 4, hoch - 15, lang * prozent, 30, RGB(32, 32, 128)
 
 ENDFUNCTION
