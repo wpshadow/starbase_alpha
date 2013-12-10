@@ -16,6 +16,10 @@ LOCAL id
 	sys_init()
 	sys_loader()
 
+	lvl_generator.size_x = 48
+	lvl_generator.size_y = 48
+	
+	lvl_generate_level()
 
 	WHILE TRUE
 

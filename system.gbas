@@ -392,25 +392,6 @@ LOCAL ok, tmp, tmp$, pic$, lang, file_load$
 
 	ENDIF
 
-//		INIOPEN file$
-//		//lang = INIGET$("pic", "count")
-//
-//		FOR tmp = 1 TO lang
-//			tmp$ = tmp
-//
-//			pic$ = "pic_" + tmp$
-//
-//			file$ = INIGET$("pic", pic$)
-//
-//			//r.id$ = loader_picture$(file$)
-//
-//			//DIMPUSH robot_pics[], r
-//
-//
-//		NEXT
-//
-//	INIOPEN ""
-
 ENDFUNCTION
 
 FUNCTION sys_load_sprite: file$
@@ -451,5 +432,16 @@ LOCAL lang, hoch, prozent
 
 	DRAWRECT sys_settings.resolution_x / 4, hoch - 15, lang, 30, RGB(32, 32, 32)
 	DRAWRECT sys_settings.resolution_x / 4, hoch - 15, lang * prozent, 30, RGB(32, 32, 128)
+
+ENDFUNCTION
+
+FUNCTION sys_draw_zoom_sprite: id, x, y, l, b
+
+	STARTPOLY id, 0
+		POLYVECTOR x, y, 0, 0, RGB(255, 255, 255)
+		POLYVECTOR x, y + b, 0, b, RGB(255, 255, 255)
+		POLYVECTOR x + l, y + b, l, b, RGB(255, 255, 255)
+		POLYVECTOR x + l, y, l, 0, RGB(255, 255, 255)
+	ENDPOLY
 
 ENDFUNCTION
