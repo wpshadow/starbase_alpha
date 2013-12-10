@@ -24,16 +24,20 @@ TYPE lvl_ground_type
 	y
 ENDTYPE
 
+TYPE lvl_light_type
+	alpha
+	x
+	y
+ENDTYPE
+
 TYPE lvl_generator_type
 	size_x
 	size_y
-
-
 ENDTYPE
 
 
 GLOBAL star_sprite[] AS star_sprite_type, robot_sprite[] AS robot_sprite_type, ground_sprite[] AS ground_sprite_type, lvl_generator AS lvl_generator_type
-GLOBAL lvl_ground[] AS lvl_ground_type
+GLOBAL lvl_ground[] AS lvl_ground_type, lvl_light[] AS lvl_light_type
 
 FUNCTION lvl:
 
@@ -87,7 +91,11 @@ ENDFUNCTION
 
 FUNCTION lvl_draw_light:
 
-
+	FOREACH m IN lvl_light[]
+		ALPHAMODE m.alpha
+			DRAWRECT m.x, m.y, 8, 8, RGB(0, 0, 0)
+		ALPHAMODE 0
+	NEXT
 ENDFUNCTION
 
 FUNCTION lvl_generate_level:
@@ -95,15 +103,34 @@ LOCAL m AS lvl_ground_type
 
 	FOR tmp_x = 0 TO lvl_generator.size_x - 1
 		FOR tmp_y = 0 TO lvl_generator.size_y - 1
-			
+
 			m.id = image[ground_sprite[0].id].id$
 			m.x = tmp_x * 32
 			m.y = tmp_y * 32
-			
+
 			DIMPUSH lvl_ground[], m
-			
-			
+
+
 		NEXT
 	NEXT
 
+ENDFUNCTION
+
+FUNCTION lvl_generate_light:
+LOCAL m AS lvl_light_type
+	
+	FOR tmp_x = 0 TO (lvl_generator.size_x * 4) - 1
+		FOR tmp_y = 0 TO (lvl_generator.size_y * 4) - 1
+
+			m.alpha = -0.5
+			m.x = tmp_x * 8
+			m.y = tmp_y * 8
+
+			IF tmp_x = 5 THEN m.alpha = -0.000001
+
+			DIMPUSH lvl_light[], m
+
+
+		NEXT
+	NEXT
 ENDFUNCTION
