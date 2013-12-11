@@ -18,7 +18,7 @@ GLOBAL gui_energy_bar AS energy_bar_type
 
 FUNCTION gui:
 
-	gui_draw_energy_bar()
+	//gui_draw_energy_bar()
 
 	gui_draw_side_menu()
 

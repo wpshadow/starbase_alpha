@@ -16,10 +16,11 @@ LOCAL id
 	sys_init()
 	sys_loader()
 
-	lvl_generator.size_x = 32
-	lvl_generator.size_y = 32
+	lvl_generator.size_x = 16
+	lvl_generator.size_y = 16
 
 	lvl_generate_level()
+	lvl_generate_wall()
 	lvl_generate_light()
 
 	WHILE TRUE

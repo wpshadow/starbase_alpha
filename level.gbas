@@ -18,7 +18,17 @@ TYPE ground_sprite_type
 	id
 ENDTYPE
 
+TYPE wall_sprite_type
+	id
+ENDTYPE
+
 TYPE lvl_ground_type
+	id
+	x
+	y
+ENDTYPE
+
+TYPE lvl_wall_type
 	id
 	x
 	y
@@ -37,7 +47,7 @@ ENDTYPE
 
 
 GLOBAL star_sprite[] AS star_sprite_type, robot_sprite[] AS robot_sprite_type, ground_sprite[] AS ground_sprite_type, lvl_generator AS lvl_generator_type
-GLOBAL lvl_ground[] AS lvl_ground_type, lvl_light[] AS lvl_light_type
+GLOBAL lvl_ground[] AS lvl_ground_type, lvl_light[] AS lvl_light_type, wall_sprite[] AS wall_sprite_type, lvl_wall[] AS lvl_wall_type
 
 FUNCTION lvl:
 
@@ -86,15 +96,19 @@ FUNCTION lvl_draw_ground:
 ENDFUNCTION
 
 FUNCTION lvl_draw_wall:
-
+	FOREACH m IN lvl_wall[]
+		sys_draw_zoom_sprite(m.id, m.x, m.y, 32, 32)
+	NEXT
 ENDFUNCTION
 
 FUNCTION lvl_draw_light:
 
 	FOREACH m IN lvl_light[]
-		ALPHAMODE m.alpha
-			DRAWRECT m.x, m.y, 8, 8, RGB(0, 0, 0)
-		ALPHAMODE 0
+		IF m.alpha < 0
+			ALPHAMODE m.alpha
+				DRAWRECT m.x, m.y, 8, 8, RGB(0, 0, 0)
+			ALPHAMODE 0
+		ENDIF
 	NEXT
 ENDFUNCTION
 
@@ -104,7 +118,21 @@ LOCAL m AS lvl_ground_type
 	FOR tmp_x = 0 TO lvl_generator.size_x - 1
 		FOR tmp_y = 0 TO lvl_generator.size_y - 1
 
+			
+			
 			m.id = image[ground_sprite[0].id].id$
+			
+			IF tmp_x > 0 AND tmp_x < lvl_generator.size_x - 1 AND tmp_y = 0 THEN m.id = image[ground_sprite[1].id].id$
+			IF tmp_x > 0 AND tmp_x < lvl_generator.size_x - 1 AND tmp_y = lvl_generator.size_y - 1 THEN m.id = image[ground_sprite[2].id].id$
+			
+			IF tmp_y > 0 AND tmp_y < lvl_generator.size_y - 1 AND  tmp_x = 0 THEN m.id = image[ground_sprite[3].id].id$
+			IF tmp_y > 0 AND tmp_y < lvl_generator.size_y - 1 AND tmp_x = lvl_generator.size_x - 1 THEN m.id = image[ground_sprite[4].id].id$
+			
+			IF tmp_x = 0 AND tmp_y = 0 THEN m.id = image[ground_sprite[5].id].id$
+			IF tmp_x = lvl_generator.size_x - 1 AND tmp_y = 0 THEN m.id = image[ground_sprite[6].id].id$
+			IF tmp_x = lvl_generator.size_x - 1 AND tmp_y = lvl_generator.size_y - 1 THEN m.id = image[ground_sprite[7].id].id$
+			IF tmp_x = 0 AND tmp_y = lvl_generator.size_y - 1 THEN m.id = image[ground_sprite[8].id].id$
+			
 			m.x = tmp_x * 32
 			m.y = tmp_y * 32
 
@@ -116,9 +144,34 @@ LOCAL m AS lvl_ground_type
 
 ENDFUNCTION
 
+FUNCTION lvl_generate_wall:
+LOCAL n AS lvl_wall_type, zufall
+
+	FOREACH m IN lvl_ground[]
+	
+		IF m.id <> image[ground_sprite[0].id].id$
+		
+			IF m.id = image[ground_sprite[1].id].id$
+				IF RND(100) > 79
+					n.id = image[wall_sprite[1].id].id$
+				ELSE
+					n.id = image[wall_sprite[0].id].id$
+				ENDIF
+				n.x = m.x
+				n.y = m.y
+			ENDIF
+			
+			IF n.id <> 0 THEN DIMPUSH lvl_wall[], n
+			
+		ENDIF
+	
+	NEXT
+
+ENDFUNCTION
+
 FUNCTION lvl_generate_light:
 LOCAL m AS lvl_light_type
-	
+
 	FOR tmp_x = 0 TO (lvl_generator.size_x * 4) - 1
 		FOR tmp_y = 0 TO (lvl_generator.size_y * 4) - 1
 
@@ -126,7 +179,11 @@ LOCAL m AS lvl_light_type
 			m.x = tmp_x * 8
 			m.y = tmp_y * 8
 
-			IF tmp_x = 5 THEN m.alpha = -0.000001
+			IF tmp_x = 4 THEN m.alpha = 0
+			IF tmp_x = 5 THEN m.alpha = -0.1
+			IF tmp_x = 6 THEN m.alpha = -0.2
+			IF tmp_x = 7 THEN m.alpha = -0.3
+			IF tmp_x = 8 THEN m.alpha = -0.4
 
 			DIMPUSH lvl_light[], m
 
