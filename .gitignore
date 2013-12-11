@@ -1,8 +1,8 @@
 # Logs #
 *.exe
 *.gbap
-Starbase_Alpha_dev.exe
-Starbase_Alpha_dev.gbap
+.exe
+.gbap
 
 #################
 ## Eclipse
