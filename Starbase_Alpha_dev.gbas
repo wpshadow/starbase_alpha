@@ -19,6 +19,9 @@ LOCAL id
 	lvl_generator.size_x = 16
 	lvl_generator.size_y = 16
 
+	lvl_generator.rooms_x = 5
+	lvl_generator.rooms_y = 2
+
 	lvl_generate_level()
 	lvl_generate_wall()
 	lvl_generate_light()
