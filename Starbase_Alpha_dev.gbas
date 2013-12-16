@@ -68,5 +68,11 @@ LOCAL output$[], tmp$, time$[]
 		CLOSEFILE 0
 
 	ENDIF
+	
+	// Unload all
+	
+	FOREACH i IN image[] 
+		LOADSPRITE "", i.id$
+	NEXT
 
 ENDSUB
