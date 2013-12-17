@@ -20,7 +20,7 @@ LOCAL id
 	lvl_generator.size_y = 16
 
 	lvl_generator.rooms_x = 5
-	lvl_generator.rooms_y = 2
+	lvl_generator.rooms_y = 3
 
 	lvl_generate_level()
 	lvl_generate_wall()
@@ -68,10 +68,10 @@ LOCAL output$[], tmp$, time$[]
 		CLOSEFILE 0
 
 	ENDIF
-	
+
 	// Unload all
-	
-	FOREACH i IN image[] 
+
+	FOREACH i IN image[]
 		LOADSPRITE "", i.id$
 	NEXT
 
