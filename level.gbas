@@ -149,7 +149,7 @@ ENDFUNCTION
 FUNCTION lvl_generate_wall:
 LOCAL n AS lvl_wall_type, zufall
 LOCAL room_count_x, room_count_y, room_size_x, room_size_y
-LOCAL init_y, allow_inc_y
+LOCAL init_x, init_y, room_set_x, room_set_y
 
 
 //	lvl_generator.size_x = 16
@@ -160,8 +160,55 @@ LOCAL init_y, allow_inc_y
 
 	room_size_x = INTEGER(lvl_generator.size_x / lvl_generator.rooms_x)
 	room_size_y = INTEGER(lvl_generator.size_y / lvl_generator.rooms_y)
+	
+	DEBUG room_size_x + "\n"
 
-	DEBUG room_size_x + " " + room_size_y
+	init_x = 0
+	init_y = 0
+
+	FOREACH m IN lvl_ground[]
+		
+		IF init_x <> m.x
+			
+			INC room_count_x, 1	
+			IF room_count_x > room_size_x THEN room_count_x = 0
+			init_x = m.x
+		ENDIF
+		
+		IF m.x = 0
+			room_count_x = 0
+			init_x = 0
+		ENDIF
+		
+// =========================================
+		
+		IF room_count_y = room_size_y
+			room_set_y = TRUE
+		ELSE
+			room_set_y = FALSE
+		ENDIF
+		
+			IF init_y <> m.y
+			
+			INC room_count_y, 1	
+			IF room_count_y > room_size_y THEN room_count_y = 0
+			init_y = m.y
+		ENDIF
+		
+		IF m.y = 0
+			room_count_y = 0
+			init_y = 0
+		ENDIF
+		
+		IF room_count_y = room_size_y
+			room_set_y = TRUE
+		ELSE
+			room_set_y = FALSE
+		ENDIF	
+		
+		DEBUG room_set_y
+		
+	NEXT
 
 
 
