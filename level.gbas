@@ -148,96 +148,117 @@ ENDFUNCTION
 
 FUNCTION lvl_generate_wall:
 LOCAL n AS lvl_wall_type, zufall
-LOCAL room_count_x, room_count_y, room_x, room_y
+LOCAL room_count_x, room_count_y, room_size_x, room_size_y
 LOCAL init_y, allow_inc_y
 
 
-	room_x = INTEGER(lvl_generator.size_x / lvl_generator.rooms_x)
-	room_y = INTEGER(lvl_generator.size_y / lvl_generator.rooms_y)
-	
-	init_y = 0
-	allow_inc_y = FALSE
+//	lvl_generator.size_x = 16
+//	lvl_generator.size_y = 16
+//
+//	lvl_generator.rooms_x = 5
+//	lvl_generator.rooms_y = 3
 
-	FOREACH m IN lvl_ground[]
+	room_size_x = INTEGER(lvl_generator.size_x / lvl_generator.rooms_x)
+	room_size_y = INTEGER(lvl_generator.size_y / lvl_generator.rooms_y)
 
-		IF m.x = 0 THEN room_count_x = 0
-		IF init_y <> m.y
-			allow_inc_y = TRUE
-			init_y = m.y
-		ENDIF
-
-//================
-
-		IF m.id = image[ground_sprite[0].id].id$
-
-			IF m.y > 0 AND m.y < (lvl_generator.size_y * 32) AND MOD(m.x, (room_x * 32)) = 0 AND room_count_x < lvl_generator.rooms_x - 1
-				n.id = image[wall_sprite[2].id].id$
-				n.x = m.x
-				n.y = m.y
-				INC room_count_x, 1
-			ENDIF
-
-			IF MOD(m.y, room_y * 32) = 0
-				
-				IF allow_inc_y = TRUE
-					allow_inc_y = FALSE
-					INC room_count_y, 1
-				ENDIF
-
-				IF room_count_y < lvl_generator.rooms_y
-					n.id = image[wall_sprite[0].id].id$
-					n.x = m.x
-					n.y = m.y
-				ENDIF
-				
-			ENDIF
-
-			IF MOD(m.x, (room_x * 32)) = 0 AND MOD(m.y, room_y * 32) = 0 AND room_count_x < lvl_generator.rooms_x - 1 AND room_count_y < lvl_generator.rooms_y
-				n.id = image[wall_sprite[12].id].id$
-				n.x = m.x
-				n.y = m.y	
-			ENDIF
+	DEBUG room_size_x + " " + room_size_y
 
 
 
-			IF n.id <> 0 THEN DIMPUSH lvl_wall[], n
-		ENDIF
+
+
+
+
+
+
+
+
+
+
+
+//	init_y = 0
+//	allow_inc_y = FALSE
+//
+//	FOREACH m IN lvl_ground[]
+//
+//		IF m.x = 0 THEN room_count_x = 0
+//		IF init_y <> m.y
+//			allow_inc_y = TRUE
+//			init_y = m.y
+//		ENDIF
 
 //================
 
-		IF m.id <> image[ground_sprite[0].id].id$
+//		IF m.id = image[ground_sprite[0].id].id$
+//
+//			IF m.y > 0 AND m.y < (lvl_generator.size_y * 32) AND MOD(m.x, (room_x * 32)) = 0 AND room_count_x < lvl_generator.rooms_x - 1
+//				n.id = image[wall_sprite[2].id].id$
+//				n.x = m.x
+//				n.y = m.y
+//				INC room_count_x, 1
+//			ENDIF
+//
+//			IF MOD(m.y, room_y * 32) = 0
+//
+//				IF allow_inc_y = TRUE
+//					allow_inc_y = FALSE
+//					INC room_count_y, 1
+//				ENDIF
+//
+//				IF room_count_y < lvl_generator.rooms_y
+//					n.id = image[wall_sprite[0].id].id$
+//					n.x = m.x
+//					n.y = m.y
+//				ENDIF
+//
+//			ENDIF
+//
+//			IF MOD(m.x, room_x * 32) = 0 AND MOD(m.y, room_y * 32) = 0 AND room_count_x < room_x AND room_count_y < room_y - 2
+//				n.id = image[wall_sprite[12].id].id$
+//				n.x = m.x
+//				n.y = m.y
+//			ENDIF
+//
+//
+//
+//			IF n.id <> 0 THEN DIMPUSH lvl_wall[], n
+//		ENDIF
 
-			IF m.id = image[ground_sprite[1].id].id$ OR m.id = image[ground_sprite[2].id].id$
-				IF RND(100) > 89
-					n.id = image[wall_sprite[1].id].id$
-				ELSE
-					n.id = image[wall_sprite[0].id].id$
-				ENDIF
-				n.x = m.x
-				n.y = m.y
-			ENDIF
+//================
 
-			IF m.id = image[ground_sprite[3].id].id$ OR m.id = image[ground_sprite[4].id].id$
-				IF RND(100) > 89
-					n.id = image[wall_sprite[3].id].id$
-				ELSE
-					n.id = image[wall_sprite[2].id].id$
-				ENDIF
-				n.x = m.x
-				n.y = m.y
-			ENDIF
-
-			IF MOD(m.x, (room_x * 32)) = 0 AND room_count_x < lvl_generator.rooms_x
-				IF m.y = 0
-					n.id = image[wall_sprite[8].id].id$
-					INC room_count_x, 1
-				ENDIF
-
-				IF m.y = (lvl_generator.size_y * 32)
-					n.id = image[wall_sprite[10].id].id$
-					INC room_count_x, 1
-				ENDIF
-			ENDIF
+//		IF m.id <> image[ground_sprite[0].id].id$
+//
+//			IF m.id = image[ground_sprite[1].id].id$ OR m.id = image[ground_sprite[2].id].id$
+//				IF RND(100) > 89
+//					n.id = image[wall_sprite[1].id].id$
+//				ELSE
+//					n.id = image[wall_sprite[0].id].id$
+//				ENDIF
+//				n.x = m.x
+//				n.y = m.y
+//			ENDIF
+//
+//			IF m.id = image[ground_sprite[3].id].id$ OR m.id = image[ground_sprite[4].id].id$
+//				IF RND(100) > 89
+//					n.id = image[wall_sprite[3].id].id$
+//				ELSE
+//					n.id = image[wall_sprite[2].id].id$
+//				ENDIF
+//				n.x = m.x
+//				n.y = m.y
+//			ENDIF
+//
+//			IF MOD(m.x, (room_x * 32)) = 0 AND room_count_x < lvl_generator.rooms_x
+//				IF m.y = 0
+//					n.id = image[wall_sprite[8].id].id$
+//					INC room_count_x, 1
+//				ENDIF
+//
+//				IF m.y = (lvl_generator.size_y * 32)
+//					n.id = image[wall_sprite[10].id].id$
+//					INC room_count_x, 1
+//				ENDIF
+//			ENDIF
 
 
 
@@ -260,37 +281,37 @@ LOCAL init_y, allow_inc_y
 //				ENDIF
 //			ENDIF
 
-			IF m.id = image[ground_sprite[5].id].id$
-				n.id = image[wall_sprite[4].id].id$
-				n.x = m.x
-				n.y = m.y
-			ENDIF
-
-			IF m.id = image[ground_sprite[6].id].id$
-				n.id = image[wall_sprite[5].id].id$
-				n.x = m.x
-				n.y = m.y
-			ENDIF
-
-			IF m.id = image[ground_sprite[7].id].id$
-				n.id = image[wall_sprite[6].id].id$
-				n.x = m.x
-				n.y = m.y
-			ENDIF
-
-			IF m.id = image[ground_sprite[8].id].id$
-				n.id = image[wall_sprite[7].id].id$
-				n.x = m.x
-				n.y = m.y
-			ENDIF
-
-			IF n.id <> 0 THEN DIMPUSH lvl_wall[], n
-
-		ENDIF
+//			IF m.id = image[ground_sprite[5].id].id$
+//				n.id = image[wall_sprite[4].id].id$
+//				n.x = m.x
+//				n.y = m.y
+//			ENDIF
+//
+//			IF m.id = image[ground_sprite[6].id].id$
+//				n.id = image[wall_sprite[5].id].id$
+//				n.x = m.x
+//				n.y = m.y
+//			ENDIF
+//
+//			IF m.id = image[ground_sprite[7].id].id$
+//				n.id = image[wall_sprite[6].id].id$
+//				n.x = m.x
+//				n.y = m.y
+//			ENDIF
+//
+//			IF m.id = image[ground_sprite[8].id].id$
+//				n.id = image[wall_sprite[7].id].id$
+//				n.x = m.x
+//				n.y = m.y
+//			ENDIF
+//
+//			IF n.id <> 0 THEN DIMPUSH lvl_wall[], n
+//
+//		ENDIF
 //================
-
-
-	NEXT
+//
+//
+//	NEXT
 
 ENDFUNCTION
 
