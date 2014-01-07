@@ -57,7 +57,7 @@ FUNCTION lvl:
 	lvl_draw_underground()
 	lvl_draw_ground()
 	lvl_draw_wall()
-	lvl_draw_light()
+	//lvl_draw_light()
 
 
 ENDFUNCTION
@@ -151,6 +151,7 @@ LOCAL n AS lvl_wall_type, zufall
 LOCAL room_count_x, room_count_y, room_size_x, room_size_y
 LOCAL init_x, init_y, room_set_x, room_set_y
 LOCAL room_total_count_x, room_total_count_y, total_count_init
+LOCAL aktiv_x, aktiv_y
 
 //	lvl_generator.size_x = 16
 //	lvl_generator.size_y = 16
@@ -170,47 +171,79 @@ LOCAL room_total_count_x, room_total_count_y, total_count_init
 
 		IF init_x <> m.x
 			INC room_count_x, 1
+			IF room_count_x = room_size_x
+				aktiv_x = TRUE
+			ELSE
+				aktiv_x = FALSE
+			ENDIF
 			IF room_count_x > room_size_x THEN room_count_x = 0
 			init_x = m.x
+			IF m.x = 0 THEN room_count_x = 0
 		ENDIF
-
-		IF m.x = 0
-			room_count_x = -1
-			room_total_count_x = 0
-			init_x = 0
-		ENDIF
-
-		IF room_count_x = room_size_x AND room_total_count_x < lvl_generator.rooms_x - 1
-			room_set_x = TRUE
-			INC room_total_count_x, 1
-		ELSE
-			room_set_x = FALSE
-		ENDIF
-
-// =========================================
 
 		IF init_y <> m.y
 			INC room_count_y, 1
+			IF room_count_y = room_size_y
+				aktiv_y = TRUE
+			ELSE
+				aktiv_y = FALSE
+			ENDIF
 			IF room_count_y > room_size_y THEN room_count_y = 0
 			init_y = m.y
 		ENDIF
 
-		IF m.y = 0
-			room_count_y = -1
-			room_total_count_y = 0
-			init_y = 0
+		IF aktiv_y = TRUE AND aktiv_x = FALSE AND m.x > 0 AND m.x < lvl_generator.size_x * 32
+			lvl_add_walls(image[wall_sprite[0].id].id$, m.x, m.y)
 		ENDIF
 
-		IF room_count_y = room_size_y AND room_total_count_y < lvl_generator.rooms_y - 1
-			room_set_y = TRUE
-			IF total_count_init = FALSE
-				INC room_total_count_y, 1
-				total_count_init = TRUE
-			ENDIF
-		ELSE
-			room_set_y = FALSE
-			total_count_init = FALSE
+		IF aktiv_x = TRUE AND aktiv_y = FALSE AND m.y > 0 AND m.y < lvl_generator.size_y * 32
+			lvl_add_walls(image[wall_sprite[2].id].id$, m.x, m.y)
 		ENDIF
+
+
+//		IF init_x <> m.x
+//			INC room_count_x, 1
+//			IF room_count_x > room_size_x THEN room_count_x = 0
+//			init_x = m.x
+//		ENDIF
+//
+//		IF m.x = 0
+//			room_count_x = -1
+//			room_total_count_x = 0
+//			init_x = 0
+//		ENDIF
+//
+//		IF room_count_x = room_size_x AND room_total_count_x < lvl_generator.rooms_x - 1
+//			room_set_x = TRUE
+//			INC room_total_count_x, 1
+//		ELSE
+//			room_set_x = FALSE
+//		ENDIF
+
+// =========================================
+
+//		IF init_y <> m.y
+//			INC room_count_y, 1
+//			IF room_count_y > room_size_y THEN room_count_y = 0
+//			init_y = m.y
+//		ENDIF
+//
+//		IF m.y = 0
+//			room_count_y = -1
+//			room_total_count_y = 0
+//			init_y = 0
+//		ENDIF
+//
+//		IF room_count_y = room_size_y AND room_total_count_y < lvl_generator.rooms_y - 1
+//			room_set_y = TRUE
+//			IF total_count_init = FALSE
+//				INC room_total_count_y, 1
+//				total_count_init = TRUE
+//			ENDIF
+//		ELSE
+//			room_set_y = FALSE
+//			total_count_init = FALSE
+//		ENDIF
 
 // =========================================
 
