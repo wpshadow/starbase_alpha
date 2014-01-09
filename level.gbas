@@ -151,13 +151,7 @@ LOCAL n AS lvl_wall_type, zufall
 LOCAL room_count_x, room_count_y, room_size_x, room_size_y
 LOCAL init_x, init_y, room_set_x, room_set_y
 LOCAL room_total_count_x, room_total_count_y, total_count_init
-LOCAL aktiv_x, aktiv_y
-
-//	lvl_generator.size_x = 16
-//	lvl_generator.size_y = 16
-//
-//	lvl_generator.rooms_x = 4
-//	lvl_generator.rooms_y = 3
+LOCAL aktiv_x, aktiv_y, half_x, half_y
 
 	room_size_x = INTEGER(lvl_generator.size_x / lvl_generator.rooms_x)
 	room_size_x = room_size_x - 1
@@ -166,38 +160,80 @@ LOCAL aktiv_x, aktiv_y
 
 	init_x = 0
 	init_y = 0
+	
+	room_total_count_x = 1
+	room_total_count_y = 1
+	
+	room_count_y = -1
 
 	FOREACH m IN lvl_ground[]
 
 		IF init_x <> m.x
 			INC room_count_x, 1
-			IF room_count_x = room_size_x
+			// -
+			IF room_count_x = INTEGER(room_size_x / 2)
+				half_x = TRUE
+			ELSE
+				half_x = FALSE
+			ENDIF
+			// -
+			IF room_count_x = room_size_x AND room_total_count_x < lvl_generator.rooms_x
 				aktiv_x = TRUE
 			ELSE
 				aktiv_x = FALSE
 			ENDIF
-			IF room_count_x > room_size_x THEN room_count_x = 0
+			// -
+			IF room_count_x > room_size_x
+				room_count_x = 0
+				INC room_total_count_x, 1
+			ENDIF
+			// -
 			init_x = m.x
-			IF m.x = 0 THEN room_count_x = 0
+			// -
+			IF m.x = 0
+				room_count_x = -1
+				room_total_count_x = 1
+			ENDIF
 		ENDIF
 
 		IF init_y <> m.y
 			INC room_count_y, 1
-			IF room_count_y = room_size_y
+			// -
+			IF room_count_y = INTEGER(room_size_y / 2)
+				half_y = TRUE
+			ELSE
+				half_y = FALSE
+			ENDIF
+			// -
+			IF room_count_y = room_size_y AND room_total_count_y < lvl_generator.rooms_y
 				aktiv_y = TRUE
 			ELSE
 				aktiv_y = FALSE
 			ENDIF
-			IF room_count_y > room_size_y THEN room_count_y = 0
+			// -
+			IF room_count_y > room_size_y
+				room_count_y = 0
+				INC room_total_count_y, 1
+			ENDIF
+			
 			init_y = m.y
 		ENDIF
 
-		IF aktiv_y = TRUE AND aktiv_x = FALSE AND m.x > 0 AND m.x < lvl_generator.size_x * 32
+		IF m.id = image[ground_sprite[5].id].id$ THEN lvl_add_walls(image[wall_sprite[4].id].id$, m.x, m.y)
+		IF m.id = image[ground_sprite[6].id].id$ THEN lvl_add_walls(image[wall_sprite[5].id].id$, m.x, m.y)
+		IF m.id = image[ground_sprite[7].id].id$ THEN lvl_add_walls(image[wall_sprite[6].id].id$, m.x, m.y)
+		IF m.id = image[ground_sprite[8].id].id$ THEN lvl_add_walls(image[wall_sprite[7].id].id$, m.x, m.y)
+
+		IF aktiv_y = TRUE AND aktiv_x = FALSE AND half_x = FALSE AND m.x > 0 AND m.x < lvl_generator.size_x * 32 AND m.y > 0 AND m.y < lvl_generator.size_y * 32
 			lvl_add_walls(image[wall_sprite[0].id].id$, m.x, m.y)
 		ENDIF
 
-		IF aktiv_x = TRUE AND aktiv_y = FALSE AND m.y > 0 AND m.y < lvl_generator.size_y * 32
+		IF aktiv_x = TRUE AND aktiv_y = FALSE AND half_y = FALSE AND m.x > 0 AND m.x < lvl_generator.size_x * 32 AND m.y > 0 AND m.y < lvl_generator.size_y * 32
 			lvl_add_walls(image[wall_sprite[2].id].id$, m.x, m.y)
+		ENDIF
+
+		IF aktiv_x = TRUE AND aktiv_y = TRUE AND m.x > 0 AND m.x < lvl_generator.size_x * 32 AND m.y > 0 AND m.y < lvl_generator.size_y * 32
+			lvl_add_walls(image[wall_sprite[12].id].id$, m.x, m.y)
 		ENDIF
 
 
@@ -247,30 +283,25 @@ LOCAL aktiv_x, aktiv_y
 
 // =========================================
 
-		IF m.id = image[ground_sprite[5].id].id$ THEN lvl_add_walls(image[wall_sprite[4].id].id$, m.x, m.y)
-		IF m.id = image[ground_sprite[6].id].id$ THEN lvl_add_walls(image[wall_sprite[5].id].id$, m.x, m.y)
-		IF m.id = image[ground_sprite[7].id].id$ THEN lvl_add_walls(image[wall_sprite[6].id].id$, m.x, m.y)
-		IF m.id = image[ground_sprite[8].id].id$ THEN lvl_add_walls(image[wall_sprite[7].id].id$, m.x, m.y)
-
-		IF m.id = image[ground_sprite[1].id].id$
-			IF room_set_x = FALSE THEN lvl_add_walls(image[wall_sprite[0].id].id$, m.x, m.y)
-			IF room_set_x = TRUE THEN lvl_add_walls(image[wall_sprite[8].id].id$, m.x, m.y)
-		ENDIF
-
-		IF m.id = image[ground_sprite[2].id].id$
-			IF room_set_x = FALSE THEN lvl_add_walls(image[wall_sprite[0].id].id$, m.x, m.y)
-			IF room_set_x = TRUE THEN lvl_add_walls(image[wall_sprite[10].id].id$, m.x, m.y)
-		ENDIF
-
-		IF m.id = image[ground_sprite[3].id].id$
-			IF room_set_y = FALSE THEN lvl_add_walls(image[wall_sprite[2].id].id$, m.x, m.y)
-			IF room_set_y = TRUE THEN lvl_add_walls(image[wall_sprite[11].id].id$, m.x, m.y)
-		ENDIF
-
-		IF m.id = image[ground_sprite[4].id].id$
-			IF room_set_y = FALSE THEN lvl_add_walls(image[wall_sprite[2].id].id$, m.x, m.y)
-			IF room_set_y = TRUE THEN lvl_add_walls(image[wall_sprite[9].id].id$, m.x, m.y)
-		ENDIF
+//		IF m.id = image[ground_sprite[1].id].id$
+//			IF room_set_x = FALSE THEN lvl_add_walls(image[wall_sprite[0].id].id$, m.x, m.y)
+//			IF room_set_x = TRUE THEN lvl_add_walls(image[wall_sprite[8].id].id$, m.x, m.y)
+//		ENDIF
+//
+//		IF m.id = image[ground_sprite[2].id].id$
+//			IF room_set_x = FALSE THEN lvl_add_walls(image[wall_sprite[0].id].id$, m.x, m.y)
+//			IF room_set_x = TRUE THEN lvl_add_walls(image[wall_sprite[10].id].id$, m.x, m.y)
+//		ENDIF
+//
+//		IF m.id = image[ground_sprite[3].id].id$
+//			IF room_set_y = FALSE THEN lvl_add_walls(image[wall_sprite[2].id].id$, m.x, m.y)
+//			IF room_set_y = TRUE THEN lvl_add_walls(image[wall_sprite[11].id].id$, m.x, m.y)
+//		ENDIF
+//
+//		IF m.id = image[ground_sprite[4].id].id$
+//			IF room_set_y = FALSE THEN lvl_add_walls(image[wall_sprite[2].id].id$, m.x, m.y)
+//			IF room_set_y = TRUE THEN lvl_add_walls(image[wall_sprite[9].id].id$, m.x, m.y)
+//		ENDIF
 
 
 	NEXT
