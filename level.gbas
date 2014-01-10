@@ -57,7 +57,7 @@ FUNCTION lvl:
 	lvl_draw_underground()
 	lvl_draw_ground()
 	lvl_draw_wall()
-	//lvl_draw_light()
+	lvl_draw_light()
 
 
 ENDFUNCTION
