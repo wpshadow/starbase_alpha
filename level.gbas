@@ -240,8 +240,8 @@ LOCAL aktiv_x, aktiv_y, half_x, half_y
 		IF aktiv_x = TRUE AND m.y = 0
 			lvl_add_walls(image[wall_sprite[8].id].id$, m.x, m.y)
 		ENDIF
-		
-		IF m.y = 0 AND m.x > 0 AND m.x < lvl_generator.size_x * 32 AND half_x = FALSE OR m.y = lvl_generator.size_y * 32 AND m.x > 0 AND m.x < lvl_generator.size_x * 32 AND half_x = FALSE
+
+		IF m.y = 0 AND m.x > 0 AND m.x < lvl_generator.size_x * 32 AND half_x = FALSE AND aktiv_x = FALSE OR m.y = lvl_generator.size_y * 32 AND m.x > 0 AND m.x < lvl_generator.size_x * 32 AND half_x = FALSE AND aktiv_x = FALSE
 			lvl_add_walls(image[wall_sprite[0].id].id$, m.x, m.y)
 		ENDIF
 
@@ -256,7 +256,7 @@ LOCAL aktiv_x, aktiv_y, half_x, half_y
 			lvl_add_walls(image[wall_sprite[11].id].id$, m.x, m.y)
 		ENDIF
 
-		IF m.x = 0 AND m.y > 0 AND m.y < lvl_generator.size_y * 32 AND half_y = FALSE OR m.x = lvl_generator.size_x * 32 AND m.y > 0 AND m.y < lvl_generator.size_y * 32 AND half_y = FALSE
+		IF m.x = 0 AND m.y > 0 AND m.y < lvl_generator.size_y * 32 AND half_y = FALSE AND aktiv_y = FALSE OR m.x = lvl_generator.size_x * 32 AND m.y > 0 AND m.y < lvl_generator.size_y * 32 AND half_y = FALSE AND aktiv_y = FALSE
 			lvl_add_walls(image[wall_sprite[2].id].id$, m.x, m.y)
 		ENDIF
 

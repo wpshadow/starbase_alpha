@@ -16,8 +16,9 @@ LOCAL id
 	sys_init()
 	sys_loader()
 
+	// size 0 - n = n + 1
 	lvl_generator.size_x = 31
-	lvl_generator.size_y = 20
+	lvl_generator.size_y = 23
 
 	lvl_generator.rooms_x = 3
 	lvl_generator.rooms_y = 3
