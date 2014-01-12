@@ -17,11 +17,11 @@ LOCAL id
 	sys_loader()
 
 	// size 0 - n = n + 1
-	lvl_generator.size_x = 28
-	lvl_generator.size_y = 17
+	lvl_generator.size_x = 31
+	lvl_generator.size_y = 23
 
-	lvl_generator.rooms_x = 3
-	lvl_generator.rooms_y = 3
+	lvl_generator.rooms_x = 4
+	lvl_generator.rooms_y = 2
 
 	lvl_generate_level()
 	lvl_generate_wall()
@@ -32,9 +32,11 @@ LOCAL id
 		sys()
 
 
-
+		DRAWRECT 0, 0, 1023, 767, RGB(255, 0, 0)
 		lvl()
 		gui()
+
+		//DRAWSPRITE image[gui_sprite[0].id].id$, 0, 0
 
 		SHOWSCREEN
 	WEND

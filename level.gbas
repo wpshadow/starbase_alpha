@@ -66,7 +66,7 @@ FUNCTION lvl:
 	lvl_draw_ground()
 	lvl_draw_wall()
 	lvl_draw_update_wall_objects()
-	lvl_draw_light()
+	//lvl_draw_light()
 
 
 ENDFUNCTION
@@ -116,6 +116,18 @@ FUNCTION lvl_draw_update_wall_objects:
 	FOREACH m IN lvl_wall_object[]
 		IF m.status = 0 THEN sys_draw_zoom_sprite(m.id_1, m.x, m.y, 32, 32)
 		IF m.status = 1 THEN sys_draw_zoom_sprite(m.id_2, m.x, m.y, 32, 32)
+
+		IF mouse.x >= m.x AND mouse.x <= m.x + 32 AND mouse.y >= m.y AND mouse.y <= m.y + 32
+			IF m.status = 0 THEN sys_draw_zoom_sprite(image[gui_sprite[1].id].id$, m.x, m.y, 32, 32)
+			IF m.status = 1 THEN sys_draw_zoom_sprite(image[gui_sprite[0].id].id$, m.x, m.y, 32, 32)
+		
+			IF mouse.b1 = 1
+				INC m.status, 1
+				IF m.status > 1 THEN m.status = 0
+			ENDIF
+		
+		ENDIF
+
 	NEXT
 ENDFUNCTION
 
@@ -264,7 +276,7 @@ LOCAL aktiv_x, aktiv_y, half_x, half_y
 		IF aktiv_x = TRUE AND m.y = lvl_generator.size_y * 32
 			lvl_add_walls(image[wall_sprite[10].id].id$, m.x, m.y)
 		ENDIF
-		
+
 		IF half_x = TRUE AND m.y = 0
 			lvl_add_wall_object(0, image[wall_sprite[13].id].id$, image[wall_sprite[17].id].id$, m.x, m.y)
 		ENDIF
@@ -287,15 +299,15 @@ LOCAL aktiv_x, aktiv_y, half_x, half_y
 		IF aktiv_y = TRUE AND m.x = lvl_generator.size_x * 32
 			lvl_add_walls(image[wall_sprite[9].id].id$, m.x, m.y)
 		ENDIF
-		
+
 		IF half_y = TRUE AND m.x = 0
 			lvl_add_wall_object(0, image[wall_sprite[16].id].id$, image[wall_sprite[20].id].id$, m.x, m.y)
 		ENDIF
 
 		IF half_y = TRUE AND m.x = lvl_generator.size_x * 32
 			lvl_add_wall_object(0, image[wall_sprite[14].id].id$, image[wall_sprite[18].id].id$, m.x, m.y)
-		ENDIF		
-		
+		ENDIF
+
 
 
 //		IF init_x <> m.x
@@ -538,7 +550,7 @@ LOCAL m AS lvl_wall_object_type
 	m.id_2 =   id_2
 	m.x =      x
 	m.y =      y
-	
+
 	DIMPUSH lvl_wall_object[], m
 
 ENDFUNCTION

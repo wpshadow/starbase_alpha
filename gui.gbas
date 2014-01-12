@@ -6,6 +6,10 @@
 
 // SETCURRENTDIR("Media") // go to media files
 
+TYPE gui_sprite_type
+	id
+ENDTYPE
+
 TYPE energy_bar_type
 	size
 	value_current
@@ -13,7 +17,7 @@ TYPE energy_bar_type
 	value_critical
 ENDTYPE
 
-GLOBAL gui_energy_bar AS energy_bar_type
+GLOBAL gui_energy_bar AS energy_bar_type, gui_sprite[] AS gui_sprite_type
 
 
 FUNCTION gui:
