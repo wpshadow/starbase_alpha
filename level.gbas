@@ -145,14 +145,19 @@ FUNCTION lvl_draw_light:
 ENDFUNCTION
 
 FUNCTION lvl_generate_level:
-LOCAL m AS lvl_ground_type
+LOCAL m AS lvl_ground_type, zufall
 
 	FOR tmp_y = 0 TO lvl_generator.size_y
 		FOR tmp_x = 0 TO lvl_generator.size_x
 
 
-
-			m.id = image[ground_sprite[0].id].id$
+			zufall = RND(100)
+			
+			IF zufall > 97
+				m.id = image[ground_sprite[9].id].id$
+			ELSE
+				m.id = image[ground_sprite[0].id].id$
+			ENDIF
 
 			IF tmp_x > 0 AND tmp_x < lvl_generator.size_x AND tmp_y = 0 THEN m.id = image[ground_sprite[1].id].id$
 			IF tmp_x > 0 AND tmp_x < lvl_generator.size_x AND tmp_y = lvl_generator.size_y THEN m.id = image[ground_sprite[2].id].id$
