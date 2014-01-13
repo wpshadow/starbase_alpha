@@ -37,8 +37,6 @@ ENDTYPE
 TYPE lvl_wall_object_type
 	status
 	id[10]
-	//id_1
-	//id_2
 	x
 	y
 ENDTYPE
@@ -284,16 +282,13 @@ LOCAL aktiv_x, aktiv_y, half_x, half_y, tmp_obj_id$
 		ENDIF
 
 		IF half_x = TRUE AND m.y = 0
-			INC tmp_obj_id$, image[wall_sprite[13].id].id$ + ";"
-			INC tmp_obj_id$, image[wall_sprite[17].id].id$
-
+			tmp_obj_id$ = image[wall_sprite[13].id].id$ + ";" + image[wall_sprite[17].id].id$
 			lvl_add_wall_object(0, tmp_obj_id$, m.x, m.y)
-
-			//lvl_add_wall_object(0, image[wall_sprite[13].id].id$, image[wall_sprite[17].id].id$, m.x, m.y)
 		ENDIF
 
 		IF half_x = TRUE AND m.y = lvl_generator.size_y * 32
-			//lvl_add_wall_object(0, image[wall_sprite[15].id].id$, image[wall_sprite[19].id].id$, m.x, m.y)
+			tmp_obj_id$ = image[wall_sprite[15].id].id$ + ";" + image[wall_sprite[19].id].id$
+			lvl_add_wall_object(0, tmp_obj_id$, m.x, m.y)
 		ENDIF
 
 
@@ -312,11 +307,13 @@ LOCAL aktiv_x, aktiv_y, half_x, half_y, tmp_obj_id$
 		ENDIF
 
 		IF half_y = TRUE AND m.x = 0
-			//lvl_add_wall_object(0, image[wall_sprite[16].id].id$, image[wall_sprite[20].id].id$, m.x, m.y)
+			tmp_obj_id$ = image[wall_sprite[16].id].id$ + ";" + image[wall_sprite[20].id].id$
+			lvl_add_wall_object(0, tmp_obj_id$, m.x, m.y)
 		ENDIF
 
 		IF half_y = TRUE AND m.x = lvl_generator.size_x * 32
-			//lvl_add_wall_object(0, image[wall_sprite[14].id].id$, image[wall_sprite[18].id].id$, m.x, m.y)
+			tmp_obj_id$ = image[wall_sprite[14].id].id$ + ";" + image[wall_sprite[18].id].id$
+			lvl_add_wall_object(0, tmp_obj_id$, m.x, m.y)
 		ENDIF
 
 
@@ -570,19 +567,6 @@ LOCAL m AS lvl_wall_object_type, inhalt$[], lang
 	DIMPUSH lvl_wall_object[], m
 
 ENDFUNCTION
-
-//FUNCTION lvl_add_wall_object: status, id_1, id_2, x, y
-//LOCAL m AS lvl_wall_object_type
-//
-//	m.status = status
-//	m.id_1 =   id_1
-//	m.id_2 =   id_2
-//	m.x =      x
-//	m.y =      y
-//
-//	DIMPUSH lvl_wall_object[], m
-//
-//ENDFUNCTION
 
 FUNCTION lvl_generate_light:
 LOCAL m AS lvl_light_type
