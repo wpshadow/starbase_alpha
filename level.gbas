@@ -36,8 +36,9 @@ ENDTYPE
 
 TYPE lvl_wall_object_type
 	status
-	id_1
-	id_2
+	id[10]
+	//id_1
+	//id_2
 	x
 	y
 ENDTYPE
@@ -114,21 +115,24 @@ ENDFUNCTION
 
 FUNCTION lvl_draw_update_wall_objects:
 	FOREACH m IN lvl_wall_object[]
-		IF m.status = 0 THEN sys_draw_zoom_sprite(m.id_1, m.x, m.y, 32, 32)
-		IF m.status = 1 THEN sys_draw_zoom_sprite(m.id_2, m.x, m.y, 32, 32)
+		IF m.status = 0 THEN sys_draw_zoom_sprite(m.id[0], m.x, m.y, 32, 32)
+		IF m.status = 1 THEN sys_draw_zoom_sprite(m.id[1], m.x, m.y, 32, 32)
+		
 
 		IF mouse.x >= m.x AND mouse.x <= m.x + 32 AND mouse.y >= m.y AND mouse.y <= m.y + 32
 			IF m.status = 0 THEN sys_draw_zoom_sprite(image[gui_sprite[1].id].id$, m.x, m.y, 32, 32)
 			IF m.status = 1 THEN sys_draw_zoom_sprite(image[gui_sprite[0].id].id$, m.x, m.y, 32, 32)
-		
+
 			IF mouse.b1 = 1
 				INC m.status, 1
 				IF m.status > 1 THEN m.status = 0
 			ENDIF
-		
+
 		ENDIF
 
 	NEXT
+	
+	
 ENDFUNCTION
 
 FUNCTION lvl_draw_light:
@@ -179,7 +183,7 @@ LOCAL n AS lvl_wall_type, zufall
 LOCAL room_count_x, room_count_y, room_size_x, room_size_y
 LOCAL init_x, init_y, room_set_x, room_set_y
 LOCAL room_total_count_x, room_total_count_y, total_count_init
-LOCAL aktiv_x, aktiv_y, half_x, half_y
+LOCAL aktiv_x, aktiv_y, half_x, half_y, tmp_obj_id$
 
 	room_size_x = INTEGER(lvl_generator.size_x / lvl_generator.rooms_x)
 	room_size_x = room_size_x - 1
@@ -278,11 +282,16 @@ LOCAL aktiv_x, aktiv_y, half_x, half_y
 		ENDIF
 
 		IF half_x = TRUE AND m.y = 0
-			lvl_add_wall_object(0, image[wall_sprite[13].id].id$, image[wall_sprite[17].id].id$, m.x, m.y)
+			INC tmp_obj_id$, image[wall_sprite[13].id].id$ + ";"
+			INC tmp_obj_id$, image[wall_sprite[17].id].id$
+
+			lvl_add_wall_object(0, tmp_obj_id$, m.x, m.y)
+
+			//lvl_add_wall_object(0, image[wall_sprite[13].id].id$, image[wall_sprite[17].id].id$, m.x, m.y)
 		ENDIF
 
 		IF half_x = TRUE AND m.y = lvl_generator.size_y * 32
-			lvl_add_wall_object(0, image[wall_sprite[15].id].id$, image[wall_sprite[19].id].id$, m.x, m.y)
+			//lvl_add_wall_object(0, image[wall_sprite[15].id].id$, image[wall_sprite[19].id].id$, m.x, m.y)
 		ENDIF
 
 
@@ -301,11 +310,11 @@ LOCAL aktiv_x, aktiv_y, half_x, half_y
 		ENDIF
 
 		IF half_y = TRUE AND m.x = 0
-			lvl_add_wall_object(0, image[wall_sprite[16].id].id$, image[wall_sprite[20].id].id$, m.x, m.y)
+			//lvl_add_wall_object(0, image[wall_sprite[16].id].id$, image[wall_sprite[20].id].id$, m.x, m.y)
 		ENDIF
 
 		IF half_y = TRUE AND m.x = lvl_generator.size_x * 32
-			lvl_add_wall_object(0, image[wall_sprite[14].id].id$, image[wall_sprite[18].id].id$, m.x, m.y)
+			//lvl_add_wall_object(0, image[wall_sprite[14].id].id$, image[wall_sprite[18].id].id$, m.x, m.y)
 		ENDIF
 
 
@@ -542,18 +551,37 @@ LOCAL m AS lvl_wall_type
 
 ENDFUNCTION
 
-FUNCTION lvl_add_wall_object: status, id_1, id_2, x, y
-LOCAL m AS lvl_wall_object_type
+FUNCTION lvl_add_wall_object: status, id$, x, y
+LOCAL m AS lvl_wall_object_type, inhalt$[], lang
+
+	lang = SPLITSTR(id$, inhalt$[], ";")
 
 	m.status = status
-	m.id_1 =   id_1
-	m.id_2 =   id_2
+
+	FOR tmp = 0 TO lang - 1
+		m.id[tmp] = inhalt$[tmp]
+		DEBUG inhalt$[tmp] + " "
+	NEXT
+
 	m.x =      x
 	m.y =      y
 
 	DIMPUSH lvl_wall_object[], m
 
 ENDFUNCTION
+
+//FUNCTION lvl_add_wall_object: status, id_1, id_2, x, y
+//LOCAL m AS lvl_wall_object_type
+//
+//	m.status = status
+//	m.id_1 =   id_1
+//	m.id_2 =   id_2
+//	m.x =      x
+//	m.y =      y
+//
+//	DIMPUSH lvl_wall_object[], m
+//
+//ENDFUNCTION
 
 FUNCTION lvl_generate_light:
 LOCAL m AS lvl_light_type
