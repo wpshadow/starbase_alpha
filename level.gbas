@@ -36,6 +36,7 @@ ENDTYPE
 
 TYPE lvl_wall_object_type
 	status
+	cautious
 	id[10]
 	x
 	y
@@ -113,20 +114,48 @@ ENDFUNCTION
 
 FUNCTION lvl_draw_update_wall_objects:
 	FOREACH m IN lvl_wall_object[]
-		IF m.status = 0 THEN sys_draw_zoom_sprite(m.id[0], m.x, m.y, 32, 32)
-		IF m.status = 1 THEN sys_draw_zoom_sprite(m.id[1], m.x, m.y, 32, 32)
-
-
-		IF mouse.x >= m.x AND mouse.x <= m.x + 32 AND mouse.y >= m.y AND mouse.y <= m.y + 32
-			IF m.status = 0 THEN sys_draw_zoom_sprite(image[gui_sprite[1].id].id$, m.x, m.y, 32, 32)
-			IF m.status = 1 THEN sys_draw_zoom_sprite(image[gui_sprite[0].id].id$, m.x, m.y, 32, 32)
-
-			IF mouse.b1 = 1
-				INC m.status, 1
-				IF m.status > 1 THEN m.status = 0
+		
+		SELECT m.cautious
+		// Fenster
+		CASE 0
+				
+			IF m.status = 0 THEN sys_draw_zoom_sprite(m.id[0], m.x, m.y, 32, 32)
+			IF m.status = 1 THEN sys_draw_zoom_sprite(m.id[1], m.x, m.y, 32, 32)
+	
+	
+			IF mouse.x >= m.x AND mouse.x <= m.x + 32 AND mouse.y >= m.y AND mouse.y <= m.y + 32
+				IF m.status = 0 THEN sys_draw_zoom_sprite(image[gui_sprite[1].id].id$, m.x, m.y, 32, 32)
+				IF m.status = 1 THEN sys_draw_zoom_sprite(image[gui_sprite[0].id].id$, m.x, m.y, 32, 32)
+	
+				IF mouse.b1 = 1
+					INC m.status, 1
+					IF m.status > 1 THEN m.status = 0
+				ENDIF
+	
 			ENDIF
-
-		ENDIF
+		
+		// Tür
+		CASE 1
+		
+			IF m.status = 0 THEN sys_draw_zoom_sprite(m.id[0], m.x, m.y, 32, 32)
+			IF m.status = 1 THEN sys_draw_zoom_sprite(m.id[1], m.x, m.y, 32, 32)
+			IF m.status = 2 THEN sys_draw_zoom_sprite(m.id[2], m.x, m.y, 32, 32)
+			
+			IF mouse.x >= m.x AND mouse.x <= m.x + 32 AND mouse.y >= m.y AND mouse.y <= m.y + 32
+			
+				IF m.status = 0 THEN sys_draw_zoom_sprite(image[gui_sprite[2].id].id$, m.x, m.y, 32, 32)
+				IF m.status = 1 THEN sys_draw_zoom_sprite(image[gui_sprite[1].id].id$, m.x, m.y, 32, 32)
+				IF m.status = 2 THEN sys_draw_zoom_sprite(image[gui_sprite[0].id].id$, m.x, m.y, 32, 32)
+			
+				IF mouse.b1 = 1
+					INC m.status, 1
+					IF m.status > 2 THEN m.status = 1
+				ENDIF		
+			
+			ENDIF
+		
+		ENDSELECT
+			
 
 	NEXT
 
@@ -152,7 +181,7 @@ LOCAL m AS lvl_ground_type, zufall
 
 
 			zufall = RND(100)
-			
+
 			IF zufall > 97
 				m.id = image[ground_sprite[9].id].id$
 			ELSE
@@ -288,13 +317,21 @@ LOCAL aktiv_x, aktiv_y, half_x, half_y, tmp_obj_id$
 
 		IF half_x = TRUE AND m.y = 0
 			tmp_obj_id$ = image[wall_sprite[13].id].id$ + ";" + image[wall_sprite[17].id].id$
-			lvl_add_wall_object(0, tmp_obj_id$, m.x, m.y)
+			lvl_add_wall_object(0, 0, tmp_obj_id$, m.x, m.y)
 		ENDIF
 
 		IF half_x = TRUE AND m.y = lvl_generator.size_y * 32
 			tmp_obj_id$ = image[wall_sprite[15].id].id$ + ";" + image[wall_sprite[19].id].id$
-			lvl_add_wall_object(0, tmp_obj_id$, m.x, m.y)
+			lvl_add_wall_object(0, 0, tmp_obj_id$, m.x, m.y)
 		ENDIF
+
+		IF half_x = TRUE AND aktiv_y = TRUE AND m.x > 0 AND m.x < lvl_generator.size_x * 32 AND m.y > 0 AND m.y < lvl_generator.size_y * 32
+			tmp_obj_id$ = image[wall_sprite[21].id].id$ + ";" + image[wall_sprite[23].id].id$ + ";" + image[wall_sprite[25].id].id$
+			lvl_add_wall_object(0, 1, tmp_obj_id$, m.x, m.y)
+		ENDIF
+
+
+
 
 
 
@@ -313,12 +350,17 @@ LOCAL aktiv_x, aktiv_y, half_x, half_y, tmp_obj_id$
 
 		IF half_y = TRUE AND m.x = 0
 			tmp_obj_id$ = image[wall_sprite[16].id].id$ + ";" + image[wall_sprite[20].id].id$
-			lvl_add_wall_object(0, tmp_obj_id$, m.x, m.y)
+			lvl_add_wall_object(0, 0, tmp_obj_id$, m.x, m.y)
 		ENDIF
 
 		IF half_y = TRUE AND m.x = lvl_generator.size_x * 32
 			tmp_obj_id$ = image[wall_sprite[14].id].id$ + ";" + image[wall_sprite[18].id].id$
-			lvl_add_wall_object(0, tmp_obj_id$, m.x, m.y)
+			lvl_add_wall_object(0, 0, tmp_obj_id$, m.x, m.y)
+		ENDIF
+
+		IF aktiv_x = TRUE AND half_y = TRUE AND m.x > 0 AND m.x < lvl_generator.size_x * 32 AND m.y > 0 AND m.y < lvl_generator.size_y * 32
+			tmp_obj_id$ = image[wall_sprite[22].id].id$ + ";" + image[wall_sprite[24].id].id$ + ";" + image[wall_sprite[26].id].id$
+			lvl_add_wall_object(0, 1, tmp_obj_id$, m.x, m.y)
 		ENDIF
 
 
@@ -555,12 +597,13 @@ LOCAL m AS lvl_wall_type
 
 ENDFUNCTION
 
-FUNCTION lvl_add_wall_object: status, id$, x, y
+FUNCTION lvl_add_wall_object: status, cautious, id$, x, y
 LOCAL m AS lvl_wall_object_type, inhalt$[], lang
 
 	lang = SPLITSTR(id$, inhalt$[], ";")
 
 	m.status = status
+	m.cautious = cautious
 
 	FOR tmp = 0 TO lang - 1
 		m.id[tmp] = inhalt$[tmp]
