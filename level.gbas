@@ -114,48 +114,48 @@ ENDFUNCTION
 
 FUNCTION lvl_draw_update_wall_objects:
 	FOREACH m IN lvl_wall_object[]
-		
+
 		SELECT m.cautious
 		// Fenster
 		CASE 0
-				
+
 			IF m.status = 0 THEN sys_draw_zoom_sprite(m.id[0], m.x, m.y, 32, 32)
 			IF m.status = 1 THEN sys_draw_zoom_sprite(m.id[1], m.x, m.y, 32, 32)
-	
-	
+
+
 			IF mouse.x >= m.x AND mouse.x <= m.x + 32 AND mouse.y >= m.y AND mouse.y <= m.y + 32
 				IF m.status = 0 THEN sys_draw_zoom_sprite(image[gui_sprite[1].id].id$, m.x, m.y, 32, 32)
 				IF m.status = 1 THEN sys_draw_zoom_sprite(image[gui_sprite[0].id].id$, m.x, m.y, 32, 32)
-	
+
 				IF mouse.b1 = 1
 					INC m.status, 1
 					IF m.status > 1 THEN m.status = 0
 				ENDIF
-	
+
 			ENDIF
-		
+
 		// Tür
 		CASE 1
-		
+
 			IF m.status = 0 THEN sys_draw_zoom_sprite(m.id[0], m.x, m.y, 32, 32)
 			IF m.status = 1 THEN sys_draw_zoom_sprite(m.id[1], m.x, m.y, 32, 32)
 			IF m.status = 2 THEN sys_draw_zoom_sprite(m.id[2], m.x, m.y, 32, 32)
-			
+
 			IF mouse.x >= m.x AND mouse.x <= m.x + 32 AND mouse.y >= m.y AND mouse.y <= m.y + 32
-			
+
 				IF m.status = 0 THEN sys_draw_zoom_sprite(image[gui_sprite[2].id].id$, m.x, m.y, 32, 32)
 				IF m.status = 1 THEN sys_draw_zoom_sprite(image[gui_sprite[1].id].id$, m.x, m.y, 32, 32)
 				IF m.status = 2 THEN sys_draw_zoom_sprite(image[gui_sprite[0].id].id$, m.x, m.y, 32, 32)
-			
+
 				IF mouse.b1 = 1
 					INC m.status, 1
 					IF m.status > 2 THEN m.status = 1
-				ENDIF		
-			
+				ENDIF
+
 			ENDIF
-		
+
 		ENDSELECT
-			
+
 
 	NEXT
 
@@ -619,22 +619,25 @@ ENDFUNCTION
 FUNCTION lvl_generate_light:
 LOCAL m AS lvl_light_type
 
-	FOR tmp_x = 0 TO (lvl_generator.size_x * 4) - 1
-		FOR tmp_y = 0 TO (lvl_generator.size_y * 4) - 1
-
-			m.alpha = -0.5
-			m.x = tmp_x * 8
-			m.y = tmp_y * 8
-
-			IF tmp_x = 4 THEN m.alpha = 0
-			IF tmp_x = 5 THEN m.alpha = -0.1
-			IF tmp_x = 6 THEN m.alpha = -0.2
-			IF tmp_x = 7 THEN m.alpha = -0.3
-			IF tmp_x = 8 THEN m.alpha = -0.4
-
-			DIMPUSH lvl_light[], m
 
 
-		NEXT
-	NEXT
+
+//	FOR tmp_x = 0 TO (lvl_generator.size_x * 4) - 1
+//		FOR tmp_y = 0 TO (lvl_generator.size_y * 4) - 1
+//
+//			m.alpha = -0.5
+//			m.x = tmp_x * 8
+//			m.y = tmp_y * 8
+//
+//			IF tmp_x = 4 THEN m.alpha = 0
+//			IF tmp_x = 5 THEN m.alpha = -0.1
+//			IF tmp_x = 6 THEN m.alpha = -0.2
+//			IF tmp_x = 7 THEN m.alpha = -0.3
+//			IF tmp_x = 8 THEN m.alpha = -0.4
+//
+//			DIMPUSH lvl_light[], m
+//
+//
+//		NEXT
+//	NEXT
 ENDFUNCTION
