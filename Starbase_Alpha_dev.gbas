@@ -47,7 +47,7 @@ ENDFUNCTION
 
 
 SUB GLB_ON_QUIT:
-LOCAL output$[], tmp$, time$[]
+LOCAL output$[], tmp$, time$[], count, average, fps_average
 
 	IF sys_settings.fps_logging = 1
 
@@ -61,10 +61,17 @@ LOCAL output$[], tmp$, time$[]
 				FOREACH m IN fps_log[]
 
 					tmp$ = m.date$ + " | fps: " + m.log_fps
+					INC fps_average, m.log_fps
+					INC count, 1
+					IF count > 10000 THEN count = 10000
 
 					WRITELINE 0, tmp$
 
 				NEXT
+				
+				average = fps_average / count
+				
+				WRITELINE 0, "average fps: " + average
 
 			ENDIF
 

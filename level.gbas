@@ -56,6 +56,7 @@ TYPE lvl_generator_type
 ENDTYPE
 
 
+
 GLOBAL star_sprite[] AS star_sprite_type, robot_sprite[] AS robot_sprite_type, ground_sprite[] AS ground_sprite_type, lvl_generator AS lvl_generator_type
 GLOBAL lvl_ground[] AS lvl_ground_type, lvl_light[] AS lvl_light_type, wall_sprite[] AS wall_sprite_type, lvl_wall[] AS lvl_wall_type, lvl_wall_object[] AS lvl_wall_object_type
 
@@ -66,7 +67,7 @@ FUNCTION lvl:
 	lvl_draw_ground()
 	lvl_draw_wall()
 	lvl_draw_update_wall_objects()
-	//lvl_draw_light()
+	lvl_draw_light()
 
 
 ENDFUNCTION
