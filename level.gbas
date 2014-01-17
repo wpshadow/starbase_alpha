@@ -642,3 +642,30 @@ LOCAL m AS lvl_light_type
 //		NEXT
 //	NEXT
 ENDFUNCTION
+
+FUNCTION lvl_calculate_intercept: x_1_start, y_1_start, x_1_end, y_1_end, x_2_start, y_2_start, x_2_end, y_2_end
+LOCAL numerator, denominator, u
+LOCAL hit, intercept_x, intercept_y
+
+	numerator =   ((x_2_end - x_2_start) * (y_1_start - y_2_start)) - ((y_2_end - y_2_start) * (x_1_start - x_2_start))
+	denominator = ((y_2_end - y_2_start) * (x_1_end - x_1_start)) - ((x_2_end - x_2_start) * (y_1_end - y_1_start))
+
+	u = numerator / denominator
+	
+	IF numerator = 0 AND denominator = 0
+		hit = FALSE
+	ENDIF
+	
+	IF denominator = 0
+		hit = FALSE
+	ENDIF
+	
+	IF u > 0
+		intercept_x = x_1_start + u * (x_1_end - x_1_start)
+		intercept_y = y_1_start + u * (y_1_end - y_1_start)	
+	ENDIF
+	
+	
+	//DEBUG intercept_x + "  " + intercept_y
+
+ENDFUNCTION

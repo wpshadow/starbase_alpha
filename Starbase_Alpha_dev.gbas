@@ -27,6 +27,8 @@ LOCAL id
 	lvl_generate_wall()
 	lvl_generate_light()
 
+
+
 	WHILE TRUE
 
 		sys()
@@ -36,7 +38,8 @@ LOCAL id
 		lvl()
 		gui()
 
-		//DRAWSPRITE image[gui_sprite[0].id].id$, 0, 0
+
+
 
 		SHOWSCREEN
 	WEND
@@ -68,9 +71,9 @@ LOCAL output$[], tmp$, time$[], count, average, fps_average
 					WRITELINE 0, tmp$
 
 				NEXT
-				
+
 				average = fps_average / count
-				
+
 				WRITELINE 0, "average fps: " + average
 
 			ENDIF
