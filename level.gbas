@@ -72,9 +72,9 @@ GLOBAL lvl_room_light[] AS lvl_room_light_type
 
 FUNCTION lvl:
 
-	lvl_draw_stars()
+	//lvl_draw_stars()
 	lvl_draw_underground()
-	lvl_draw_ground()
+	//lvl_draw_ground()
 	lvl_draw_wall()
 	lvl_draw_update_wall_objects()
 	lvl_draw_light()
@@ -103,7 +103,7 @@ LOCAL tmp_x, tmp_y
 //	NEXT
 
 	FOREACH m IN lvl_ground[]
-		sys_draw_zoom_sprite(m.id, m.x * 32, m.y * 32, 32, 32)
+		sys_draw_zoom_sprite(m.id, m.x, m.y, 32, 32)
 	NEXT
 
 	//DRAWSPRITE image[ground_sprite[0].id].id$, 0, 0
@@ -134,7 +134,7 @@ FUNCTION lvl_draw_update_wall_objects:
 			IF m.status = 1 THEN sys_draw_zoom_sprite(m.id[1], m.x, m.y, 32, 32)
 
 
-			IF mouse.x >= m.x AND mouse.x <= m.x + 32 AND mouse.y >= m.y AND mouse.y <= m.y + 32
+			IF mouse.x >= (m.x * 32) AND mouse.x <= (m.x * 32) + 32 AND mouse.y >= (m.y * 32) AND mouse.y <= (m.y * 32) + 32
 				IF m.status = 0 THEN sys_draw_zoom_sprite(image[gui_sprite[1].id].id$, m.x, m.y, 32, 32)
 				IF m.status = 1 THEN sys_draw_zoom_sprite(image[gui_sprite[0].id].id$, m.x, m.y, 32, 32)
 
@@ -152,7 +152,7 @@ FUNCTION lvl_draw_update_wall_objects:
 			IF m.status = 1 THEN sys_draw_zoom_sprite(m.id[1], m.x, m.y, 32, 32)
 			IF m.status = 2 THEN sys_draw_zoom_sprite(m.id[2], m.x, m.y, 32, 32)
 
-			IF mouse.x >= m.x AND mouse.x <= m.x + 32 AND mouse.y >= m.y AND mouse.y <= m.y + 32
+			IF mouse.x >= (m.x * 32) AND mouse.x <= (m.x * 32) + 32 AND mouse.y >= (m.y * 32) AND mouse.y <= (m.y * 32) + 32
 
 				IF m.status = 0 THEN sys_draw_zoom_sprite(image[gui_sprite[2].id].id$, m.x, m.y, 32, 32)
 				IF m.status = 1 THEN sys_draw_zoom_sprite(image[gui_sprite[1].id].id$, m.x, m.y, 32, 32)
@@ -177,7 +177,7 @@ FUNCTION lvl_draw_light:
 
 	FOREACH m IN lvl_light[]
 		IF m.alpha < 0
-			ALPHAMODE m.alpha
+			ALPHAMODE -0.99
 				DRAWRECT m.x, m.y, 8, 8, RGB(0, 0, 0)
 			ALPHAMODE 0
 		ENDIF
@@ -297,48 +297,48 @@ LOCAL aktiv_x, aktiv_y, half_x, half_y, tmp_obj_id$
 			init_y = m.y
 		ENDIF
 
-		IF m.id = image[ground_sprite[5].id].id$ THEN lvl_add_walls(image[wall_sprite[4].id].id$, m.x * 32, m.y * 32)
-		IF m.id = image[ground_sprite[6].id].id$ THEN lvl_add_walls(image[wall_sprite[5].id].id$, m.x * 32, m.y * 32)
-		IF m.id = image[ground_sprite[7].id].id$ THEN lvl_add_walls(image[wall_sprite[6].id].id$, m.x * 32, m.y * 32)
-		IF m.id = image[ground_sprite[8].id].id$ THEN lvl_add_walls(image[wall_sprite[7].id].id$, m.x * 32, m.y * 32)
+		IF m.id = image[ground_sprite[5].id].id$ THEN lvl_add_walls(image[wall_sprite[4].id].id$, m.x, m.y)
+		IF m.id = image[ground_sprite[6].id].id$ THEN lvl_add_walls(image[wall_sprite[5].id].id$, m.x, m.y)
+		IF m.id = image[ground_sprite[7].id].id$ THEN lvl_add_walls(image[wall_sprite[6].id].id$, m.x, m.y)
+		IF m.id = image[ground_sprite[8].id].id$ THEN lvl_add_walls(image[wall_sprite[7].id].id$, m.x, m.y)
 
 		IF aktiv_y = TRUE AND aktiv_x = FALSE AND half_x = FALSE AND m.x > 0 AND m.x < lvl_generator.size_x AND m.y > 0 AND m.y < lvl_generator.size_y
-			lvl_add_walls(image[wall_sprite[0].id].id$, m.x * 32, m.y * 32)
+			lvl_add_walls(image[wall_sprite[0].id].id$, m.x, m.y)
 		ENDIF
 
 		IF aktiv_x = TRUE AND aktiv_y = FALSE AND half_y = FALSE AND m.x > 0 AND m.x < lvl_generator.size_x AND m.y > 0 AND m.y < lvl_generator.size_y
-			lvl_add_walls(image[wall_sprite[2].id].id$, m.x * 32, m.y * 32)
+			lvl_add_walls(image[wall_sprite[2].id].id$, m.x, m.y)
 		ENDIF
 
 		IF aktiv_x = TRUE AND aktiv_y = TRUE AND m.x > 0 AND m.x < lvl_generator.size_x AND m.y > 0 AND m.y < lvl_generator.size_y
-			lvl_add_walls(image[wall_sprite[12].id].id$, m.x * 32, m.y * 32)
+			lvl_add_walls(image[wall_sprite[12].id].id$, m.x, m.y)
 		ENDIF
 
 		IF aktiv_x = TRUE AND m.y = 0
-			lvl_add_walls(image[wall_sprite[8].id].id$, m.x * 32, m.y * 32)
+			lvl_add_walls(image[wall_sprite[8].id].id$, m.x, m.y)
 		ENDIF
 
 		IF m.y = 0 AND m.x > 0 AND m.x < lvl_generator.size_x AND half_x = FALSE AND aktiv_x = FALSE OR m.y = lvl_generator.size_y AND m.x > 0 AND m.x < lvl_generator.size_x AND half_x = FALSE AND aktiv_x = FALSE
-			lvl_add_walls(image[wall_sprite[0].id].id$, m.x * 32, m.y * 32)
+			lvl_add_walls(image[wall_sprite[0].id].id$, m.x, m.y)
 		ENDIF
 
 		IF aktiv_x = TRUE AND m.y = lvl_generator.size_y
-			lvl_add_walls(image[wall_sprite[10].id].id$, m.x * 32, m.y * 32)
+			lvl_add_walls(image[wall_sprite[10].id].id$, m.x, m.y)
 		ENDIF
 
 		IF half_x = TRUE AND m.y = 0
 			tmp_obj_id$ = image[wall_sprite[13].id].id$ + ";" + image[wall_sprite[17].id].id$
-			lvl_add_wall_object(0, 0, tmp_obj_id$, m.x * 32, m.y * 32)
+			lvl_add_wall_object(0, 0, tmp_obj_id$, m.x, m.y)
 		ENDIF
 
 		IF half_x = TRUE AND m.y = lvl_generator.size_y
 			tmp_obj_id$ = image[wall_sprite[15].id].id$ + ";" + image[wall_sprite[19].id].id$
-			lvl_add_wall_object(0, 0, tmp_obj_id$, m.x * 32, m.y * 32)
+			lvl_add_wall_object(0, 0, tmp_obj_id$, m.x, m.y)
 		ENDIF
 
 		IF half_x = TRUE AND aktiv_y = TRUE AND m.x > 0 AND m.x < lvl_generator.size_x AND m.y > 0 AND m.y < lvl_generator.size_y
 			tmp_obj_id$ = image[wall_sprite[21].id].id$ + ";" + image[wall_sprite[23].id].id$ + ";" + image[wall_sprite[25].id].id$
-			lvl_add_wall_object(0, 1, tmp_obj_id$, m.x * 32, m.y * 32)
+			lvl_add_wall_object(0, 1, tmp_obj_id$, m.x, m.y)
 		ENDIF
 
 
@@ -348,30 +348,30 @@ LOCAL aktiv_x, aktiv_y, half_x, half_y, tmp_obj_id$
 
 
 		IF aktiv_y = TRUE AND m.x = 0
-			lvl_add_walls(image[wall_sprite[11].id].id$, m.x * 32, m.y * 32)
+			lvl_add_walls(image[wall_sprite[11].id].id$, m.x, m.y)
 		ENDIF
 
 		IF m.x = 0 AND m.y > 0 AND m.y < lvl_generator.size_y AND half_y = FALSE AND aktiv_y = FALSE OR m.x = lvl_generator.size_x AND m.y > 0 AND m.y < lvl_generator.size_y AND half_y = FALSE AND aktiv_y = FALSE
-			lvl_add_walls(image[wall_sprite[2].id].id$, m.x * 32, m.y * 32)
+			lvl_add_walls(image[wall_sprite[2].id].id$, m.x, m.y)
 		ENDIF
 
 		IF aktiv_y = TRUE AND m.x = lvl_generator.size_x
-			lvl_add_walls(image[wall_sprite[9].id].id$, m.x * 32, m.y * 32)
+			lvl_add_walls(image[wall_sprite[9].id].id$, m.x, m.y)
 		ENDIF
 
 		IF half_y = TRUE AND m.x = 0
 			tmp_obj_id$ = image[wall_sprite[16].id].id$ + ";" + image[wall_sprite[20].id].id$
-			lvl_add_wall_object(0, 0, tmp_obj_id$, m.x * 32, m.y * 32)
+			lvl_add_wall_object(0, 0, tmp_obj_id$, m.x, m.y)
 		ENDIF
 
 		IF half_y = TRUE AND m.x = lvl_generator.size_x
 			tmp_obj_id$ = image[wall_sprite[14].id].id$ + ";" + image[wall_sprite[18].id].id$
-			lvl_add_wall_object(0, 0, tmp_obj_id$, m.x * 32, m.y * 32)
+			lvl_add_wall_object(0, 0, tmp_obj_id$, m.x, m.y)
 		ENDIF
 
 		IF aktiv_x = TRUE AND half_y = TRUE AND m.x > 0 AND m.x < lvl_generator.size_x AND m.y > 0 AND m.y < lvl_generator.size_y
 			tmp_obj_id$ = image[wall_sprite[22].id].id$ + ";" + image[wall_sprite[24].id].id$ + ";" + image[wall_sprite[26].id].id$
-			lvl_add_wall_object(0, 1, tmp_obj_id$, m.x * 32, m.y * 32)
+			lvl_add_wall_object(0, 1, tmp_obj_id$, m.x, m.y)
 		ENDIF
 
 
@@ -414,7 +414,26 @@ LOCAL m AS lvl_wall_object_type, inhalt$[], lang
 ENDFUNCTION
 
 FUNCTION lvl_generate_light:
-LOCAL m AS lvl_light_type
+LOCAL n AS lvl_room_light_type
+
+	FOREACH m IN lvl_wall[]
+		IF m.id = image[wall_sprite[4].id].id$ OR m.id = image[wall_sprite[8].id].id$ OR m.id = image[wall_sprite[11].id].id$ OR m.id = image[wall_sprite[12].id].id$
+			
+			n.start_x = m.x + 1
+			n.start_y = m.y + 1
+			
+			DEBUG n.start_x + " " + n.start_y + "\n"
+		ENDIF
+	NEXT	
+
+
+	//lvl_room_light[]
+//	IF image[wall_sprite[22].id].id$
+//	
+//	DEBUG LEN(lvl_wall[])
+//	
+//	END
+
 
 
 

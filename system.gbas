@@ -448,10 +448,10 @@ ENDFUNCTION
 FUNCTION sys_draw_zoom_sprite: id, x, y, l, b
 
 	STARTPOLY id, 0
-		POLYVECTOR x, y, 0, 0, RGB(255, 255, 255)
-		POLYVECTOR x, y + b, 0, b, RGB(255, 255, 255)
-		POLYVECTOR x + l, y + b, l, b, RGB(255, 255, 255)
-		POLYVECTOR x + l, y, l, 0, RGB(255, 255, 255)
+		POLYVECTOR x * l, y * b, 0, 0, RGB(255, 255, 255)
+		POLYVECTOR x * l, (y * b) + b, 0, b, RGB(255, 255, 255)
+		POLYVECTOR (x * l) + l, (y * b) + b, l, b, RGB(255, 255, 255)
+		POLYVECTOR (x * l) + l, y * b, l, 0, RGB(255, 255, 255)
 	ENDPOLY
 
 ENDFUNCTION
