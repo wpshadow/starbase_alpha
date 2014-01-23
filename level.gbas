@@ -174,14 +174,26 @@ FUNCTION lvl_draw_update_wall_objects:
 ENDFUNCTION
 
 FUNCTION lvl_draw_light:
+LOCAL tmp_x, tmp_y
 
-	FOREACH m IN lvl_light[]
-		IF m.alpha < 0
-			ALPHAMODE -0.99
-				DRAWRECT m.x, m.y, 8, 8, RGB(0, 0, 0)
-			ALPHAMODE 0
-		ENDIF
+	FOREACH m IN lvl_room_light[]
+		FOR tmp_y = 0 TO m.size_y - 1
+			FOR tmp_x = 0 TO m.size_x - 1
+				ALPHAMODE -0.4
+					DRAWRECT (m.start_x * 32) + (tmp_x * 32), (m.start_y * 32) + (tmp_y * 32), 32, 32, RGB(0, 0, 0)
+				ALPHAMODE 0
+				//n.tile[tmp_x][tmp_y] = 0
+			NEXT
+		NEXT		
 	NEXT
+
+//	FOREACH m IN lvl_light[]
+//		IF m.alpha < 0
+//			ALPHAMODE -0.99
+//				DRAWRECT m.x, m.y, 8, 8, RGB(0, 0, 0)
+//			ALPHAMODE 0
+//		ENDIF
+//	NEXT
 ENDFUNCTION
 
 FUNCTION lvl_generate_level:
@@ -414,24 +426,80 @@ LOCAL m AS lvl_wall_object_type, inhalt$[], lang
 ENDFUNCTION
 
 FUNCTION lvl_generate_light:
-LOCAL n AS lvl_room_light_type
+LOCAL n AS lvl_room_light_type, found
+LOCAL lenght_x, lenght_y, hit_x, hit_y, offset_x, offset_y
 
 	FOREACH m IN lvl_wall[]
 		IF m.id = image[wall_sprite[4].id].id$ OR m.id = image[wall_sprite[8].id].id$ OR m.id = image[wall_sprite[11].id].id$ OR m.id = image[wall_sprite[12].id].id$
-			
+
 			n.start_x = m.x + 1
 			n.start_y = m.y + 1
+			lenght_x = 0
+			lenght_y = 0
+			hit_x = 0
+			hit_y = 0
+			offset_x = 0
+			offset_y = 0
+			found = FALSE
+
+			WHILE found = FALSE
+				
+				IF hit_x = FALSE THEN INC offset_x, 1
+				IF hit_y = FALSE THEN INC offset_y, 1
+				
+				lenght_x = n.start_x + offset_x
+				lenght_y = n.start_y + offset_y
+				
+				FOREACH o IN lvl_wall[]
+					IF hit_x = FALSE
+						IF o.x = lenght_x AND o.y = n.start_y
+							hit_x = TRUE
+						ENDIF
+					ENDIF
+					IF hit_y = FALSE
+						IF o.x = n.start_x AND o.y = lenght_y
+							hit_y = TRUE
+						ENDIF					
+					ENDIF
+				NEXT
+				
+								
+				IF hit_x = TRUE AND hit_y = TRUE
+					DEBUG (lenght_x - n.start_x) + " " + (lenght_y - n.start_y) + "\n"
+					found = TRUE
+				ENDIF
+			WEND
 			
-			DEBUG n.start_x + " " + n.start_y + "\n"
+			IF found = TRUE
+				n.size_x = lenght_x - 1
+				n.size_y = lenght_y - 1
+				DIMPUSH lvl_room_light[], n
+			ENDIF
+
+			//DEBUG n.start_x + " " + n.start_y + "\n"
 		ENDIF
-	NEXT	
+	NEXT
+
+	lvl_generate_light_room()
+
+
+//TYPE lvl_room_light_type
+//	start_x
+//	start_y
+//	size_x
+//	size_y
+//	tile[999][999]
+//ENDTYPE
+
+
+
 
 
 	//lvl_room_light[]
 //	IF image[wall_sprite[22].id].id$
-//	
+//
 //	DEBUG LEN(lvl_wall[])
-//	
+//
 //	END
 
 
@@ -456,6 +524,27 @@ LOCAL n AS lvl_room_light_type
 //
 //		NEXT
 //	NEXT
+ENDFUNCTION
+
+FUNCTION lvl_generate_light_room:
+LOCAL tmp_x, tmp_y
+
+	FOREACH n IN lvl_room_light[]
+		FOR tmp_y = 0 TO n.size_y - 1
+			FOR tmp_x = 0 TO n.size_x - 1
+				n.tile[tmp_x][tmp_y] = 0
+			NEXT
+		NEXT		
+	NEXT
+
+	//TYPE lvl_room_light_type
+	//	start_x
+	//	start_y
+	//	size_x
+	//	size_y
+	//	tile[999][999]
+	//ENDTYPE
+
 ENDFUNCTION
 
 FUNCTION lvl_calculate_intercept: x_1_start, y_1_start, x_1_end, y_1_end, x_2_start, y_2_start, x_2_end, y_2_end
