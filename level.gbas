@@ -184,7 +184,7 @@ LOCAL tmp_x, tmp_y
 				ALPHAMODE 0
 				//n.tile[tmp_x][tmp_y] = 0
 			NEXT
-		NEXT		
+		NEXT
 	NEXT
 
 //	FOREACH m IN lvl_light[]
@@ -443,13 +443,13 @@ LOCAL lenght_x, lenght_y, hit_x, hit_y, offset_x, offset_y
 			found = FALSE
 
 			WHILE found = FALSE
-				
+
 				IF hit_x = FALSE THEN INC offset_x, 1
 				IF hit_y = FALSE THEN INC offset_y, 1
-				
+
 				lenght_x = n.start_x + offset_x
 				lenght_y = n.start_y + offset_y
-				
+
 				FOREACH o IN lvl_wall[]
 					IF hit_x = FALSE
 						IF o.x = lenght_x AND o.y = n.start_y
@@ -459,20 +459,23 @@ LOCAL lenght_x, lenght_y, hit_x, hit_y, offset_x, offset_y
 					IF hit_y = FALSE
 						IF o.x = n.start_x AND o.y = lenght_y
 							hit_y = TRUE
-						ENDIF					
+						ENDIF
 					ENDIF
 				NEXT
-				
-								
+
+
 				IF hit_x = TRUE AND hit_y = TRUE
-					DEBUG (lenght_x - n.start_x) + " " + (lenght_y - n.start_y) + "\n"
+					//DEBUG (lenght_x - n.start_x) + " " + (lenght_y - n.start_y) + "\n"
 					found = TRUE
 				ENDIF
 			WEND
-			
+
 			IF found = TRUE
-				n.size_x = lenght_x - 1
-				n.size_y = lenght_y - 1
+				n.size_x = lenght_x - n.start_x
+				n.size_y = lenght_y - n.start_y
+				
+				DEBUG n.size_x + " " + n.size_y + "\n"
+				
 				DIMPUSH lvl_room_light[], n
 			ENDIF
 
@@ -534,7 +537,7 @@ LOCAL tmp_x, tmp_y
 			FOR tmp_x = 0 TO n.size_x - 1
 				n.tile[tmp_x][tmp_y] = 0
 			NEXT
-		NEXT		
+		NEXT
 	NEXT
 
 	//TYPE lvl_room_light_type
