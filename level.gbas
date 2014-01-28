@@ -38,6 +38,7 @@ TYPE lvl_wall_object_type
 	status
 	cautious
 	id[10]
+	room_id
 	x
 	y
 ENDTYPE
@@ -62,8 +63,12 @@ TYPE lvl_room_light_type
 	size_y
 	tile[999][999]
 	light_counter
-	light[99][99]
-	light_typ[99]
+	light_pos_x[99]
+	light_pos_y[99]
+	light_dir[99]
+	
+	//light[99][99]
+	//light_typ[99]
 ENDTYPE
 
 
@@ -490,6 +495,7 @@ LOCAL lenght_x, lenght_y, hit_x, hit_y, offset_x, offset_y
 
 	lvl_generate_light_room()
 	lvl_calculate_light_position()
+	lvl_calculate_light_field()
 
 	//lvl_wall_object[]
 
@@ -573,9 +579,10 @@ FUNCTION lvl_calculate_light_position:
 //
 //
 
-LOCAL tmp_x, tmp_y
+LOCAL tmp_x, tmp_y, id
 
 	FOREACH p IN lvl_room_light[]
+	INC id, 1
 		FOREACH q IN lvl_wall_object[]
 
 			// Calc Position X Achse
@@ -583,12 +590,20 @@ LOCAL tmp_x, tmp_y
 				IF q.x = p.start_x + tmp_x AND q.y = p.start_y - 1 AND q.cautious = 0 AND q.status = 0
 					INC p.light_counter, 1
 					p.tile[tmp_x][p.start_y - 1] = 1
-					p.light[tmp_x][p.start_y - 1] = 1
+					p.light_pos_x[p.light_counter - 1] = tmp_x
+					p.light_pos_y[p.light_counter - 1] = p.start_y - 1
+					p.light_dir[p.light_counter - 1] = 1
+					//p.light[tmp_x][p.start_y - 1] = 1
+					q.room_id = id - 1
 				ENDIF
 				IF q.x = p.start_x + tmp_x AND q.y = p.start_y + p.size_y AND q.cautious = 0 AND q.status = 0
 					INC p.light_counter, 1
 					p.tile[tmp_x][p.size_y - 1] = 1
-					p.light[tmp_x][p.size_y - 1] = 3
+					p.light_pos_x[p.light_counter - 1] = tmp_x
+					p.light_pos_y[p.light_counter - 1] = p.size_y - 1
+					p.light_dir[p.light_counter - 1] = 3
+					//p.light[tmp_x][p.size_y - 1] = 3
+					q.room_id = id - 1
 				ENDIF
 			NEXT
 
@@ -597,15 +612,23 @@ LOCAL tmp_x, tmp_y
 				IF q.x = p.start_x - 1 AND q.y = p.start_y + tmp_y AND q.cautious = 0 AND q.status = 0
 					INC p.light_counter, 1
 					p.tile[p.start_x - 1][tmp_y] = 1
-					p.light[p.start_x - 1][tmp_y] = 2
+					p.light_pos_x[p.light_counter - 1] = p.start_x - 1
+					p.light_pos_y[p.light_counter - 1] = tmp_y
+					p.light_dir[p.light_counter - 1] = 2
+					//p.light[p.start_x - 1][tmp_y] = 2
+					q.room_id = id - 1
 				ENDIF
 				IF q.x = p.start_x + p.size_x AND q.y = p.start_y + tmp_y AND q.cautious = 0 AND q.status = 0
 					INC p.light_counter, 1
 					p.tile[p.size_x - 1][tmp_y] = 1
-					p.light[p.size_x - 1][tmp_y] = 4
-				ENDIF			
+					p.light_pos_x[p.light_counter - 1] = p.size_x - 1
+					p.light_pos_y[p.light_counter - 1] = tmp_y
+					p.light_dir[p.light_counter - 1] = 4
+					//p.light[p.size_x - 1][tmp_y] = 4
+					q.room_id = id - 1
+				ENDIF
 			NEXT
-			
+
 
 		NEXT
 	NEXT
@@ -622,6 +645,33 @@ LOCAL tmp_x, tmp_y
 //ENDTYPE
 
 
+ENDFUNCTION
+
+FUNCTION lvl_calculate_light_field:
+LOCAL tmp, finished
+
+	FOREACH p IN lvl_room_light[]
+		FOR tmp = 0 TO p.light_counter - 1
+			
+			finished  = FALSE
+			
+			WHILE finished = FALSE
+				SELECT p.light_dir[tmp]
+				CASE 1
+					DEBUG "1 "				
+				CASE 2
+					DEBUG "2 "
+				CASE 3
+					DEBUG "3 "
+				CASE 4
+					DEBUG "4 "
+				ENDSELECT
+				
+				finished = TRUE
+			WEND
+		NEXT
+	NEXT
+	
 ENDFUNCTION
 
 
