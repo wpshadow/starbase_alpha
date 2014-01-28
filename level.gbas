@@ -61,6 +61,9 @@ TYPE lvl_room_light_type
 	size_x
 	size_y
 	tile[999][999]
+	light_counter
+	light[99][99]
+	light_typ[99]
 ENDTYPE
 
 
@@ -179,9 +182,11 @@ LOCAL tmp_x, tmp_y
 	FOREACH m IN lvl_room_light[]
 		FOR tmp_y = 0 TO m.size_y - 1
 			FOR tmp_x = 0 TO m.size_x - 1
-				ALPHAMODE -0.4
-					DRAWRECT (m.start_x * 32) + (tmp_x * 32), (m.start_y * 32) + (tmp_y * 32), 32, 32, RGB(0, 0, 0)
-				ALPHAMODE 0
+				IF m.tile[tmp_x][tmp_y] = 0
+					ALPHAMODE -0.5
+						DRAWRECT (m.start_x * 32) + (tmp_x * 32), (m.start_y * 32) + (tmp_y * 32), 32, 32, RGB(0, 0, 0)
+					ALPHAMODE 0
+				ENDIF
 				//n.tile[tmp_x][tmp_y] = 0
 			NEXT
 		NEXT
@@ -261,7 +266,7 @@ LOCAL aktiv_x, aktiv_y, half_x, half_y, tmp_obj_id$
 		IF init_x <> m.x
 			INC room_count_x, 1
 			// -
-			IF room_count_x = INTEGER(room_size_x / 2)
+			IF room_count_x = INTEGER(room_size_x / 2) - 1
 				half_x = TRUE
 			ELSE
 				half_x = FALSE
@@ -473,9 +478,9 @@ LOCAL lenght_x, lenght_y, hit_x, hit_y, offset_x, offset_y
 			IF found = TRUE
 				n.size_x = lenght_x - n.start_x
 				n.size_y = lenght_y - n.start_y
-				
-				DEBUG n.size_x + " " + n.size_y + "\n"
-				
+
+				//DEBUG n.size_x + " " + n.size_y + "\n"
+
 				DIMPUSH lvl_room_light[], n
 			ENDIF
 
@@ -484,15 +489,19 @@ LOCAL lenght_x, lenght_y, hit_x, hit_y, offset_x, offset_y
 	NEXT
 
 	lvl_generate_light_room()
+	lvl_calculate_light_position()
 
+	//lvl_wall_object[]
 
-//TYPE lvl_room_light_type
-//	start_x
-//	start_y
-//	size_x
-//	size_y
-//	tile[999][999]
+//TYPE lvl_wall_object_type
+//	status
+//	cautious
+//	id[10]
+//	x
+//	y
 //ENDTYPE
+
+
 
 
 
@@ -535,7 +544,9 @@ LOCAL tmp_x, tmp_y
 	FOREACH n IN lvl_room_light[]
 		FOR tmp_y = 0 TO n.size_y - 1
 			FOR tmp_x = 0 TO n.size_x - 1
+
 				n.tile[tmp_x][tmp_y] = 0
+				//IF tmp_x = 0 AND tmp_y = 0 THEN n.tile[0][0] = 1
 			NEXT
 		NEXT
 	NEXT
@@ -549,6 +560,70 @@ LOCAL tmp_x, tmp_y
 	//ENDTYPE
 
 ENDFUNCTION
+
+FUNCTION lvl_calculate_light_position:
+//
+// Ausrichtung
+//
+//     1
+//    ---
+// 4 |   | 2
+//    ---
+//     3
+//
+//
+
+LOCAL tmp_x, tmp_y
+
+	FOREACH p IN lvl_room_light[]
+		FOREACH q IN lvl_wall_object[]
+
+			// Calc Position X Achse
+			FOR tmp_x = 0 TO p.size_x - 1
+				IF q.x = p.start_x + tmp_x AND q.y = p.start_y - 1 AND q.cautious = 0 AND q.status = 0
+					INC p.light_counter, 1
+					p.tile[tmp_x][p.start_y - 1] = 1
+					p.light[tmp_x][p.start_y - 1] = 1
+				ENDIF
+				IF q.x = p.start_x + tmp_x AND q.y = p.start_y + p.size_y AND q.cautious = 0 AND q.status = 0
+					INC p.light_counter, 1
+					p.tile[tmp_x][p.size_y - 1] = 1
+					p.light[tmp_x][p.size_y - 1] = 3
+				ENDIF
+			NEXT
+
+			// Calc Position Y Achse
+			FOR tmp_y = 0 TO p.size_y - 1
+				IF q.x = p.start_x - 1 AND q.y = p.start_y + tmp_y AND q.cautious = 0 AND q.status = 0
+					INC p.light_counter, 1
+					p.tile[p.start_x - 1][tmp_y] = 1
+					p.light[p.start_x - 1][tmp_y] = 2
+				ENDIF
+				IF q.x = p.start_x + p.size_x AND q.y = p.start_y + tmp_y AND q.cautious = 0 AND q.status = 0
+					INC p.light_counter, 1
+					p.tile[p.size_x - 1][tmp_y] = 1
+					p.light[p.size_x - 1][tmp_y] = 4
+				ENDIF			
+			NEXT
+			
+
+		NEXT
+	NEXT
+
+//TYPE lvl_room_light_type
+//	start_x
+//	start_y
+//	size_x
+//	size_y
+//	tile[999][999]
+//	light_counter
+//	light[99][99]
+//	light_typ[99]
+//ENDTYPE
+
+
+ENDFUNCTION
+
 
 FUNCTION lvl_calculate_intercept: x_1_start, y_1_start, x_1_end, y_1_end, x_2_start, y_2_start, x_2_end, y_2_end
 LOCAL numerator, denominator, u
