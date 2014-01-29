@@ -66,6 +66,7 @@ TYPE lvl_room_light_type
 	light_pos_x[99]
 	light_pos_y[99]
 	light_dir[99]
+	light_calc_finished[99]
 
 	//light[99][99]
 	//light_typ[99]
@@ -573,7 +574,7 @@ FUNCTION lvl_calculate_light_position:
 //
 //     1
 //    ---
-// 4 |   | 2
+// 2 |   | 4
 //    ---
 //     3
 //
@@ -633,15 +634,15 @@ LOCAL tmp_x, tmp_y, id
 		NEXT
 	NEXT
 
-	FOREACH r IN lvl_room_light[]
-		IF r.light_counter > 1
-			IF r.light_dir[0] = 2 AND r.light_dir[1] = 3 OR r.light_dir[0] = 4 AND r.light_dir[1] = 3
-				SWAP r.light_dir[0], r.light_dir[1]
-				SWAP r.light_pos_x[0], r.light_pos_x[1]
-				SWAP r.light_pos_y[0], r.light_pos_y[1]			
-			ENDIF
-		ENDIF
-	NEXT
+//	FOREACH r IN lvl_room_light[]
+//		IF r.light_counter > 1
+//			IF r.light_dir[0] = 2 AND r.light_dir[1] = 3 OR r.light_dir[0] = 4 AND r.light_dir[1] = 3
+//				SWAP r.light_dir[0], r.light_dir[1]
+//				SWAP r.light_pos_x[0], r.light_pos_x[1]
+//				SWAP r.light_pos_y[0], r.light_pos_y[1]
+//			ENDIF
+//		ENDIF
+//	NEXT
 
 //TYPE lvl_room_light_type
 //	start_x
@@ -667,73 +668,123 @@ LOCAL above_y, under_y, pivot_y
 	FOREACH p IN lvl_room_light[]
 		DEBUG "Light_counter: " + p.light_counter + "\n"
 		FOR tmp = 0 TO p.light_counter - 1
-			
+
 			DEBUG p.light_dir[tmp] + " " + p.light_pos_x[tmp] + " " + p.light_pos_y[tmp] + "\n"
-			
-			
-			finished  = FALSE
-			init = FALSE
 
-			WHILE finished = FALSE
-				SELECT p.light_dir[tmp]
-				CASE 1
-					IF init = FALSE
-						left_x = p.light_pos_x
-						right_x = p.light_pos_x
-						pivot_y = p.light_pos_y
-						init = TRUE
-					ENDIF
-
-					DEC left_x, 1
-					IF left_x < 0 THEN left_x = 0
-
-					INC right_x, 1
-					IF right_x > p.size_x - 1 THEN right_x = p.size_x - 1
-
-					INC pivot_y, 1
-					IF pivot_y >= p.size_y - 1 THEN finished = TRUE
-
-
-					FOR tmp_x = left_x TO right_x
-						p.tile[tmp_x][pivot_y] = 1
-					NEXT
-
-				//CASE 2
-				//	finished = TRUE
-					//DEBUG "2 "
-				CASE 3
-					IF init = FALSE
-						left_x = p.light_pos_x
-						right_x = p.light_pos_x
-						pivot_y = p.light_pos_y
-						init = TRUE
-					ENDIF
+			//IF p.light_calc_finished[tmp] = 0
+				finished  = FALSE
+				init = FALSE
+	
+				WHILE finished = FALSE
+					SELECT p.light_dir[tmp]
+					CASE 1
+						//finished = TRUE
 					
-					DEC left_x, 1
-					IF left_x < 0 THEN left_x = 0
+						IF init = FALSE
+							left_x = p.light_pos_x[tmp]
+							right_x = p.light_pos_x[tmp]
+							pivot_y = p.light_pos_y[tmp]
+							init = TRUE
+						ENDIF
+	
+						DEC left_x, 1
+						IF left_x < 0 THEN left_x = 0
+	
+						INC right_x, 1
+						IF right_x > p.size_x - 1 THEN right_x = p.size_x - 1
+	
+						INC pivot_y, 1
+						IF pivot_y >= p.size_y - 1 THEN finished = TRUE
+	
+	
+						FOR tmp_x = left_x TO right_x
+							p.tile[tmp_x][pivot_y] = 1
+						NEXT
+	
+					CASE 2
+						//finished = TRUE
+						
+						IF init = FALSE
+							above_y = p.light_pos_y[tmp]
+							under_y = p.light_pos_y[tmp]
+							pivot_x = p.light_pos_x[tmp]
+							init = TRUE
+						ENDIF
+						
+						DEC above_y, 1
+						IF above_y < 0 THEN above_y = 0
+						
+						INC under_y, 1
+						IF under_y > p.size_y - 1 THEN under_y = p.size_y - 1
+						
+						INC pivot_x, 1
+						IF pivot_x >= p.size_x - 1 THEN finished = TRUE
+						
+						FOR tmp_x = above_y TO under_y
+							p.tile[pivot_x][tmp_x] = 1
+						NEXT
+						
+						//DEBUG "2 "
+					CASE 3
+						//finished = TRUE
+						
+						IF init = FALSE
+							left_x = p.light_pos_x[tmp]
+							right_x = p.light_pos_x[tmp]
+							pivot_y = p.light_pos_y[tmp]
+							init = TRUE
+						ENDIF
+	
+						DEC left_x, 1
+						IF left_x < 0 THEN left_x = 0
+	
+						INC right_x, 1
+						IF right_x > p.size_x - 1 THEN right_x = p.size_x - 1
+	
+						DEC pivot_y, 1
+						IF pivot_y <= 0 THEN finished = TRUE
+	
+						FOR tmp_x = left_x TO right_x
+							p.tile[tmp_x][pivot_y] = 1
+						NEXT
+	
 
-					INC right_x, 1
-					IF right_x > p.size_x - 1 THEN right_x = p.size_x - 1
+						//finished = TRUE
+						//DEBUG "3 "
+					CASE 4
 					
-					DEC pivot_y, 1
-					IF pivot_y <= 0 THEN finished = TRUE
+						IF init = FALSE
+							above_y = p.light_pos_y[tmp]
+							under_y = p.light_pos_y[tmp]
+							pivot_x = p.light_pos_x[tmp]
+							init = TRUE
+						ENDIF
 					
-					FOR tmp_x = left_x TO right_x
-						p.tile[tmp_x][pivot_y] = 1
-					NEXT
+						DEC above_y, 1
+						IF above_y < 0 THEN above_y = 0
+						
+						INC under_y, 1
+						IF under_y > p.size_y - 1 THEN under_y = p.size_y - 1
+						
+						DEC pivot_x, 1
+						IF pivot_x <= 0 THEN finished = TRUE
+						
+						FOR tmp_x = above_y TO under_y
+							p.tile[pivot_x][tmp_x] = 1
+						NEXT					
 					
-					
-					//finished = TRUE
-					//DEBUG "3 "
-				//CASE 4
-				//	finished = TRUE
-					//DEBUG "4 "
-				DEFAULT
-					finished = TRUE
-				ENDSELECT
-
+					//	finished = TRUE
+						//DEBUG "4 "
+					DEFAULT
+						finished = TRUE
+					ENDSELECT
+	
+	
+				WEND
 				
-			WEND
+			//	p.light_calc_finished[tmp] = 1
+			//ENDIF
+
 		NEXT
 	NEXT
 
