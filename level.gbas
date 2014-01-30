@@ -66,18 +66,16 @@ TYPE lvl_room_light_type
 	light_pos_x[99]
 	light_pos_y[99]
 	light_dir[99]
-	light_calc_finished[99]
-
-	//light[99][99]
-	//light_typ[99]
 ENDTYPE
 
-
+TYPE lvl_room_light_recalc_type
+	id
+ENDTYPE
 
 
 GLOBAL star_sprite[] AS star_sprite_type, robot_sprite[] AS robot_sprite_type, ground_sprite[] AS ground_sprite_type, lvl_generator AS lvl_generator_type
 GLOBAL lvl_ground[] AS lvl_ground_type, lvl_light[] AS lvl_light_type, wall_sprite[] AS wall_sprite_type, lvl_wall[] AS lvl_wall_type, lvl_wall_object[] AS lvl_wall_object_type
-GLOBAL lvl_room_light[] AS lvl_room_light_type
+GLOBAL lvl_room_light[] AS lvl_room_light_type, lvl_room_light_recalc[] AS lvl_room_light_recalc_type
 
 FUNCTION lvl:
 
@@ -86,6 +84,7 @@ FUNCTION lvl:
 	//lvl_draw_ground()
 	lvl_draw_wall()
 	lvl_draw_update_wall_objects()
+	lvl_recalc_light()
 	lvl_draw_light()
 
 
@@ -133,6 +132,8 @@ FUNCTION lvl_draw_wall:
 ENDFUNCTION
 
 FUNCTION lvl_draw_update_wall_objects:
+LOCAL n AS lvl_room_light_recalc_type
+
 	FOREACH m IN lvl_wall_object[]
 
 		SELECT m.cautious
@@ -149,6 +150,8 @@ FUNCTION lvl_draw_update_wall_objects:
 
 				IF mouse.b1 = 1
 					INC m.status, 1
+					n.id = m.room_id
+					DIMPUSH lvl_room_light_recalc[], n
 					IF m.status > 1 THEN m.status = 0
 				ENDIF
 
@@ -406,6 +409,7 @@ LOCAL aktiv_x, aktiv_y, half_x, half_y, tmp_obj_id$
 
 ENDFUNCTION
 
+
 FUNCTION lvl_add_walls: id, x, y
 LOCAL m AS lvl_wall_type
 
@@ -424,6 +428,7 @@ LOCAL m AS lvl_wall_object_type, inhalt$[], lang
 
 	m.status = status
 	m.cautious = cautious
+	m.room_id = -1
 
 	FOR tmp = 0 TO lang - 1
 		m.id[tmp] = inhalt$[tmp]
@@ -545,30 +550,70 @@ LOCAL lenght_x, lenght_y, hit_x, hit_y, offset_x, offset_y
 //	NEXT
 ENDFUNCTION
 
+FUNCTION lvl_recalc_light:
+
+	IF LEN(lvl_room_light_recalc[]) > 0
+
+		
+
+		FOREACH m IN lvl_room_light_recalc[]
+		
+			lvl_generate_light_room_id(m.id)
+			lvl_calculate_light_position(m.id)
+			lvl_calculate_light_field(m.id)
+			DELETE m
+		NEXT
+
+	ENDIF
+
+ENDFUNCTION
+
 FUNCTION lvl_generate_light_room:
 LOCAL tmp_x, tmp_y
 
 	FOREACH n IN lvl_room_light[]
 		FOR tmp_y = 0 TO n.size_y - 1
 			FOR tmp_x = 0 TO n.size_x - 1
-
 				n.tile[tmp_x][tmp_y] = 0
-				//IF tmp_x = 0 AND tmp_y = 0 THEN n.tile[0][0] = 1
 			NEXT
 		NEXT
 	NEXT
 
-	//TYPE lvl_room_light_type
-	//	start_x
-	//	start_y
-	//	size_x
-	//	size_y
-	//	tile[999][999]
-	//ENDTYPE
-
 ENDFUNCTION
 
-FUNCTION lvl_calculate_light_position:
+FUNCTION lvl_generate_light_room_id: id
+LOCAL tmp_x, tmp_y, tmp
+
+	//FOREACH n IN lvl_room_light[]
+		FOR tmp_y = 0 TO lvl_room_light[id].size_y - 1
+			FOR tmp_x = 0 TO lvl_room_light[id].size_x - 1
+				lvl_room_light[id].tile[tmp_x][tmp_y] = 0
+			NEXT
+		NEXT
+	//NEXT
+	
+	
+	FOR tmp = 0 TO lvl_room_light[id].light_counter - 1
+		lvl_room_light[id].light_pos_x[tmp] = 0
+		lvl_room_light[id].light_pos_y[tmp] = 0
+		lvl_room_light[id].light_dir[tmp] = 0
+	NEXT
+
+	lvl_room_light[id].light_counter = 0
+//TYPE lvl_room_light_type
+//	start_x
+//	start_y
+//	size_x
+//	size_y
+//	tile[999][999]
+//	light_counter
+//	light_pos_x[99]
+//	light_pos_y[99]
+//	light_dir[99]
+//ENDTYPE
+ENDFUNCTION
+
+FUNCTION lvl_calculate_light_position: id = -1
 //
 // Ausrichtung
 //
@@ -580,213 +625,376 @@ FUNCTION lvl_calculate_light_position:
 //
 //
 
-LOCAL tmp_x, tmp_y, id
+LOCAL tmp_x, tmp_y, count_id
 
-	FOREACH p IN lvl_room_light[]
-	INC id, 1
+	IF id = -1
+
+		FOREACH p IN lvl_room_light[]
+		INC count_id, 1
+			FOREACH q IN lvl_wall_object[]
+	
+				// Calc Position X Achse
+				FOR tmp_x = 0 TO p.size_x - 1
+					IF q.x = p.start_x + tmp_x AND q.y = p.start_y - 1 AND q.cautious = 0 AND q.status = 0
+						INC p.light_counter, 1
+						p.tile[tmp_x][p.start_y - 1] = 1
+						p.light_pos_x[p.light_counter - 1] = tmp_x
+						p.light_pos_y[p.light_counter - 1] = p.start_y - 1
+						p.light_dir[p.light_counter - 1] = 1
+						//p.light[tmp_x][p.start_y - 1] = 1
+						q.room_id = count_id - 1
+					ENDIF
+					IF q.x = p.start_x + tmp_x AND q.y = p.start_y + p.size_y AND q.cautious = 0 AND q.status = 0
+						INC p.light_counter, 1
+						p.tile[tmp_x][p.size_y - 1] = 1
+						p.light_pos_x[p.light_counter - 1] = tmp_x
+						p.light_pos_y[p.light_counter - 1] = p.size_y - 1
+						p.light_dir[p.light_counter - 1] = 3
+						//p.light[tmp_x][p.size_y - 1] = 3
+						q.room_id = count_id - 1
+					ENDIF
+				NEXT
+	
+				// Calc Position Y Achse
+				FOR tmp_y = 0 TO p.size_y - 1
+					IF q.x = p.start_x - 1 AND q.y = p.start_y + tmp_y AND q.cautious = 0 AND q.status = 0
+						INC p.light_counter, 1
+						p.tile[p.start_x - 1][tmp_y] = 1
+						p.light_pos_x[p.light_counter - 1] = p.start_x - 1
+						p.light_pos_y[p.light_counter - 1] = tmp_y
+						p.light_dir[p.light_counter - 1] = 2
+						//p.light[p.start_x - 1][tmp_y] = 2
+						q.room_id = count_id - 1
+					ENDIF
+					IF q.x = p.start_x + p.size_x AND q.y = p.start_y + tmp_y AND q.cautious = 0 AND q.status = 0
+						INC p.light_counter, 1
+						p.tile[p.size_x - 1][tmp_y] = 1
+						p.light_pos_x[p.light_counter - 1] = p.size_x - 1
+						p.light_pos_y[p.light_counter - 1] = tmp_y
+						p.light_dir[p.light_counter - 1] = 4
+						//p.light[p.size_x - 1][tmp_y] = 4
+						q.room_id = count_id - 1
+					ENDIF
+				NEXT
+	
+	
+			NEXT
+		NEXT
+	
+	ELSE
+	
 		FOREACH q IN lvl_wall_object[]
 
 			// Calc Position X Achse
-			FOR tmp_x = 0 TO p.size_x - 1
-				IF q.x = p.start_x + tmp_x AND q.y = p.start_y - 1 AND q.cautious = 0 AND q.status = 0
-					INC p.light_counter, 1
-					p.tile[tmp_x][p.start_y - 1] = 1
-					p.light_pos_x[p.light_counter - 1] = tmp_x
-					p.light_pos_y[p.light_counter - 1] = p.start_y - 1
-					p.light_dir[p.light_counter - 1] = 1
+			FOR tmp_x = 0 TO lvl_room_light[id].size_x - 1
+				IF q.x = lvl_room_light[id].start_x + tmp_x AND q.y = lvl_room_light[id].start_y - 1 AND q.cautious = 0 AND q.status = 0
+					INC lvl_room_light[id].light_counter, 1
+					lvl_room_light[id].tile[tmp_x][lvl_room_light[id].start_y - 1] = 1
+					lvl_room_light[id].light_pos_x[lvl_room_light[id].light_counter - 1] = tmp_x
+					lvl_room_light[id].light_pos_y[lvl_room_light[id].light_counter - 1] = lvl_room_light[id].start_y - 1
+					lvl_room_light[id].light_dir[lvl_room_light[id].light_counter - 1] = 1
 					//p.light[tmp_x][p.start_y - 1] = 1
-					q.room_id = id - 1
+					//q.room_id = id
 				ENDIF
-				IF q.x = p.start_x + tmp_x AND q.y = p.start_y + p.size_y AND q.cautious = 0 AND q.status = 0
-					INC p.light_counter, 1
-					p.tile[tmp_x][p.size_y - 1] = 1
-					p.light_pos_x[p.light_counter - 1] = tmp_x
-					p.light_pos_y[p.light_counter - 1] = p.size_y - 1
-					p.light_dir[p.light_counter - 1] = 3
-					//p.light[tmp_x][p.size_y - 1] = 3
-					q.room_id = id - 1
+				IF q.x = lvl_room_light[id].start_x + tmp_x AND q.y = lvl_room_light[id].start_y + lvl_room_light[id].size_y AND q.cautious = 0 AND q.status = 0
+					INC lvl_room_light[id].light_counter, 1
+					lvl_room_light[id].tile[tmp_x][lvl_room_light[id].size_y - 1] = 1
+					lvl_room_light[id].light_pos_x[lvl_room_light[id].light_counter - 1] = tmp_x
+					lvl_room_light[id].light_pos_y[lvl_room_light[id].light_counter - 1] = lvl_room_light[id].size_y - 1
+					lvl_room_light[id].light_dir[lvl_room_light[id].light_counter - 1] = 3
+					//lvl_room_light[id].light[tmp_x][lvl_room_light[id].size_y - 1] = 3
+					//q.room_id = id
 				ENDIF
 			NEXT
 
 			// Calc Position Y Achse
-			FOR tmp_y = 0 TO p.size_y - 1
-				IF q.x = p.start_x - 1 AND q.y = p.start_y + tmp_y AND q.cautious = 0 AND q.status = 0
-					INC p.light_counter, 1
-					p.tile[p.start_x - 1][tmp_y] = 1
-					p.light_pos_x[p.light_counter - 1] = p.start_x - 1
-					p.light_pos_y[p.light_counter - 1] = tmp_y
-					p.light_dir[p.light_counter - 1] = 2
-					//p.light[p.start_x - 1][tmp_y] = 2
-					q.room_id = id - 1
+			FOR tmp_y = 0 TO lvl_room_light[id].size_y - 1
+				IF q.x = lvl_room_light[id].start_x - 1 AND q.y = lvl_room_light[id].start_y + tmp_y AND q.cautious = 0 AND q.status = 0
+					INC lvl_room_light[id].light_counter, 1
+					lvl_room_light[id].tile[lvl_room_light[id].start_x - 1][tmp_y] = 1
+					lvl_room_light[id].light_pos_x[lvl_room_light[id].light_counter - 1] = lvl_room_light[id].start_x - 1
+					lvl_room_light[id].light_pos_y[lvl_room_light[id].light_counter - 1] = tmp_y
+					lvl_room_light[id].light_dir[lvl_room_light[id].light_counter - 1] = 2
+					//lvl_room_light[id].light[lvl_room_light[id].start_x - 1][tmp_y] = 2
+					//q.room_id = count_id - 1
 				ENDIF
-				IF q.x = p.start_x + p.size_x AND q.y = p.start_y + tmp_y AND q.cautious = 0 AND q.status = 0
-					INC p.light_counter, 1
-					p.tile[p.size_x - 1][tmp_y] = 1
-					p.light_pos_x[p.light_counter - 1] = p.size_x - 1
-					p.light_pos_y[p.light_counter - 1] = tmp_y
-					p.light_dir[p.light_counter - 1] = 4
-					//p.light[p.size_x - 1][tmp_y] = 4
-					q.room_id = id - 1
+				IF q.x = lvl_room_light[id].start_x + lvl_room_light[id].size_x AND q.y = lvl_room_light[id].start_y + tmp_y AND q.cautious = 0 AND q.status = 0
+					INC lvl_room_light[id].light_counter, 1
+					lvl_room_light[id].tile[lvl_room_light[id].size_x - 1][tmp_y] = 1
+					lvl_room_light[id].light_pos_x[lvl_room_light[id].light_counter - 1] = lvl_room_light[id].size_x - 1
+					lvl_room_light[id].light_pos_y[lvl_room_light[id].light_counter - 1] = tmp_y
+					lvl_room_light[id].light_dir[lvl_room_light[id].light_counter - 1] = 4
+					//lvl_room_light[id].light[lvl_room_light[id].size_x - 1][tmp_y] = 4
+					//q.room_id = count_id - 1
 				ENDIF
 			NEXT
 
 
-		NEXT
-	NEXT
-
-//	FOREACH r IN lvl_room_light[]
-//		IF r.light_counter > 1
-//			IF r.light_dir[0] = 2 AND r.light_dir[1] = 3 OR r.light_dir[0] = 4 AND r.light_dir[1] = 3
-//				SWAP r.light_dir[0], r.light_dir[1]
-//				SWAP r.light_pos_x[0], r.light_pos_x[1]
-//				SWAP r.light_pos_y[0], r.light_pos_y[1]
-//			ENDIF
-//		ENDIF
-//	NEXT
-
-//TYPE lvl_room_light_type
-//	start_x
-//	start_y
-//	size_x
-//	size_y
-//	tile[999][999]
-//	light_counter
-//	light[99][99]
-//	light_typ[99]
-//ENDTYPE
-
+		NEXT		
+	
+	ENDIF
 
 ENDFUNCTION
 
-FUNCTION lvl_calculate_light_field:
+FUNCTION lvl_calculate_light_field: id = -1
 LOCAL tmp, finished, init, tmp_x
 LOCAL left_x, right_x, pivot_x
 LOCAL above_y, under_y, pivot_y
 
 
+	IF id = -1
 
-	FOREACH p IN lvl_room_light[]
-		DEBUG "Light_counter: " + p.light_counter + "\n"
-		FOR tmp = 0 TO p.light_counter - 1
-
-			DEBUG p.light_dir[tmp] + " " + p.light_pos_x[tmp] + " " + p.light_pos_y[tmp] + "\n"
-
-			//IF p.light_calc_finished[tmp] = 0
-				finished  = FALSE
-				init = FALSE
+		FOREACH p IN lvl_room_light[]
+			//DEBUG "Light_counter: " + p.light_counter + "\n"
+			FOR tmp = 0 TO p.light_counter - 1
 	
-				WHILE finished = FALSE
-					SELECT p.light_dir[tmp]
-					CASE 1
-						//finished = TRUE
-					
-						IF init = FALSE
-							left_x = p.light_pos_x[tmp]
-							right_x = p.light_pos_x[tmp]
-							pivot_y = p.light_pos_y[tmp]
-							init = TRUE
-						ENDIF
+				//DEBUG p.light_dir[tmp] + " " + p.light_pos_x[tmp] + " " + p.light_pos_y[tmp] + "\n"
 	
-						DEC left_x, 1
-						IF left_x < 0 THEN left_x = 0
+				//IF p.light_calc_finished[tmp] = 0
+					finished  = FALSE
+					init = FALSE
 	
-						INC right_x, 1
-						IF right_x > p.size_x - 1 THEN right_x = p.size_x - 1
+					WHILE finished = FALSE
+						SELECT p.light_dir[tmp]
+						CASE 1
+							//finished = TRUE
 	
-						INC pivot_y, 1
-						IF pivot_y >= p.size_y - 1 THEN finished = TRUE
+							IF init = FALSE
+								left_x = p.light_pos_x[tmp]
+								right_x = p.light_pos_x[tmp]
+								pivot_y = p.light_pos_y[tmp]
+								init = TRUE
+							ENDIF
 	
+							DEC left_x, 1
+							IF left_x < 0 THEN left_x = 0
 	
-						FOR tmp_x = left_x TO right_x
-							p.tile[tmp_x][pivot_y] = 1
-						NEXT
+							INC right_x, 1
+							IF right_x > p.size_x - 1 THEN right_x = p.size_x - 1
 	
-					CASE 2
-						//finished = TRUE
-						
-						IF init = FALSE
-							above_y = p.light_pos_y[tmp]
-							under_y = p.light_pos_y[tmp]
-							pivot_x = p.light_pos_x[tmp]
-							init = TRUE
-						ENDIF
-						
-						DEC above_y, 1
-						IF above_y < 0 THEN above_y = 0
-						
-						INC under_y, 1
-						IF under_y > p.size_y - 1 THEN under_y = p.size_y - 1
-						
-						INC pivot_x, 1
-						IF pivot_x >= p.size_x - 1 THEN finished = TRUE
-						
-						FOR tmp_x = above_y TO under_y
-							p.tile[pivot_x][tmp_x] = 1
-						NEXT
-						
-						//DEBUG "2 "
-					CASE 3
-						//finished = TRUE
-						
-						IF init = FALSE
-							left_x = p.light_pos_x[tmp]
-							right_x = p.light_pos_x[tmp]
-							pivot_y = p.light_pos_y[tmp]
-							init = TRUE
-						ENDIF
-	
-						DEC left_x, 1
-						IF left_x < 0 THEN left_x = 0
-	
-						INC right_x, 1
-						IF right_x > p.size_x - 1 THEN right_x = p.size_x - 1
-	
-						DEC pivot_y, 1
-						IF pivot_y <= 0 THEN finished = TRUE
-	
-						FOR tmp_x = left_x TO right_x
-							p.tile[tmp_x][pivot_y] = 1
-						NEXT
-	
-
-						//finished = TRUE
-						//DEBUG "3 "
-					CASE 4
-					
-						IF init = FALSE
-							above_y = p.light_pos_y[tmp]
-							under_y = p.light_pos_y[tmp]
-							pivot_x = p.light_pos_x[tmp]
-							init = TRUE
-						ENDIF
-					
-						DEC above_y, 1
-						IF above_y < 0 THEN above_y = 0
-						
-						INC under_y, 1
-						IF under_y > p.size_y - 1 THEN under_y = p.size_y - 1
-						
-						DEC pivot_x, 1
-						IF pivot_x <= 0 THEN finished = TRUE
-						
-						FOR tmp_x = above_y TO under_y
-							p.tile[pivot_x][tmp_x] = 1
-						NEXT					
-					
-					//	finished = TRUE
-						//DEBUG "4 "
-					DEFAULT
-						finished = TRUE
-					ENDSELECT
+							INC pivot_y, 1
+							IF pivot_y >= p.size_y - 1 THEN finished = TRUE
 	
 	
-				WEND
-				
-			//	p.light_calc_finished[tmp] = 1
-			//ENDIF
-
+							FOR tmp_x = left_x TO right_x
+								p.tile[tmp_x][pivot_y] = 1
+							NEXT
+	
+						CASE 2
+							//finished = TRUE
+	
+							IF init = FALSE
+								above_y = p.light_pos_y[tmp]
+								under_y = p.light_pos_y[tmp]
+								pivot_x = p.light_pos_x[tmp]
+								init = TRUE
+							ENDIF
+	
+							DEC above_y, 1
+							IF above_y < 0 THEN above_y = 0
+	
+							INC under_y, 1
+							IF under_y > p.size_y - 1 THEN under_y = p.size_y - 1
+	
+							INC pivot_x, 1
+							IF pivot_x >= p.size_x - 1 THEN finished = TRUE
+	
+							FOR tmp_x = above_y TO under_y
+								p.tile[pivot_x][tmp_x] = 1
+							NEXT
+	
+							//DEBUG "2 "
+						CASE 3
+							//finished = TRUE
+	
+							IF init = FALSE
+								left_x = p.light_pos_x[tmp]
+								right_x = p.light_pos_x[tmp]
+								pivot_y = p.light_pos_y[tmp]
+								init = TRUE
+							ENDIF
+	
+							DEC left_x, 1
+							IF left_x < 0 THEN left_x = 0
+	
+							INC right_x, 1
+							IF right_x > p.size_x - 1 THEN right_x = p.size_x - 1
+	
+							DEC pivot_y, 1
+							IF pivot_y <= 0 THEN finished = TRUE
+	
+							FOR tmp_x = left_x TO right_x
+								p.tile[tmp_x][pivot_y] = 1
+							NEXT
+	
+	
+							//finished = TRUE
+							//DEBUG "3 "
+						CASE 4
+	
+							IF init = FALSE
+								above_y = p.light_pos_y[tmp]
+								under_y = p.light_pos_y[tmp]
+								pivot_x = p.light_pos_x[tmp]
+								init = TRUE
+							ENDIF
+	
+							DEC above_y, 1
+							IF above_y < 0 THEN above_y = 0
+	
+							INC under_y, 1
+							IF under_y > p.size_y - 1 THEN under_y = p.size_y - 1
+	
+							DEC pivot_x, 1
+							IF pivot_x <= 0 THEN finished = TRUE
+	
+							FOR tmp_x = above_y TO under_y
+								p.tile[pivot_x][tmp_x] = 1
+							NEXT
+	
+						//	finished = TRUE
+							//DEBUG "4 "
+						DEFAULT
+							finished = TRUE
+						ENDSELECT
+	
+	
+					WEND
+	
+				//	p.light_calc_finished[tmp] = 1
+				//ENDIF
+	
+			NEXT
 		NEXT
-	NEXT
+		
+	ELSE
+	
+		//FOREACH p IN lvl_room_light[]
+			//DEBUG "Light_counter: " + p.light_counter + "\n"
+		
+			
+			FOR tmp = 0 TO lvl_room_light[id].light_counter - 1
+	
+				//DEBUG lvl_room_light[id].light_dir[tmp] + " " + lvl_room_light[id].light_pos_x[tmp] + " " + lvl_room_light[id].light_pos_y[tmp] + "\n"
+	
+				//IF lvl_room_light[id].light_calc_finished[tmp] = 0
+					finished  = FALSE
+					init = FALSE
+	
+					WHILE finished = FALSE
+						SELECT lvl_room_light[id].light_dir[tmp]
+						CASE 1
+							//finished = TRUE
+	
+							IF init = FALSE
+								left_x = lvl_room_light[id].light_pos_x[tmp]
+								right_x = lvl_room_light[id].light_pos_x[tmp]
+								pivot_y = lvl_room_light[id].light_pos_y[tmp]
+								init = TRUE
+							ENDIF
+	
+							DEC left_x, 1
+							IF left_x < 0 THEN left_x = 0
+	
+							INC right_x, 1
+							IF right_x > lvl_room_light[id].size_x - 1 THEN right_x = lvl_room_light[id].size_x - 1
+	
+							INC pivot_y, 1
+							IF pivot_y >= lvl_room_light[id].size_y - 1 THEN finished = TRUE
+	
+	
+							FOR tmp_x = left_x TO right_x
+								lvl_room_light[id].tile[tmp_x][pivot_y] = 1
+							NEXT
+	
+						CASE 2
+							//finished = TRUE
+	
+							IF init = FALSE
+								above_y = lvl_room_light[id].light_pos_y[tmp]
+								under_y = lvl_room_light[id].light_pos_y[tmp]
+								pivot_x = lvl_room_light[id].light_pos_x[tmp]
+								init = TRUE
+							ENDIF
+	
+							DEC above_y, 1
+							IF above_y < 0 THEN above_y = 0
+	
+							INC under_y, 1
+							IF under_y > lvl_room_light[id].size_y - 1 THEN under_y = lvl_room_light[id].size_y - 1
+	
+							INC pivot_x, 1
+							IF pivot_x >= lvl_room_light[id].size_x - 1 THEN finished = TRUE
+	
+							FOR tmp_x = above_y TO under_y
+								lvl_room_light[id].tile[pivot_x][tmp_x] = 1
+							NEXT
+	
+							//DEBUG "2 "
+						CASE 3
+							//finished = TRUE
+	
+							IF init = FALSE
+								left_x = lvl_room_light[id].light_pos_x[tmp]
+								right_x = lvl_room_light[id].light_pos_x[tmp]
+								pivot_y = lvl_room_light[id].light_pos_y[tmp]
+								init = TRUE
+							ENDIF
+	
+							DEC left_x, 1
+							IF left_x < 0 THEN left_x = 0
+	
+							INC right_x, 1
+							IF right_x > lvl_room_light[id].size_x - 1 THEN right_x = lvl_room_light[id].size_x - 1
+	
+							DEC pivot_y, 1
+							IF pivot_y <= 0 THEN finished = TRUE
+	
+							FOR tmp_x = left_x TO right_x
+								lvl_room_light[id].tile[tmp_x][pivot_y] = 1
+							NEXT
+	
+	
+							//finished = TRUE
+							//DEBUG "3 "
+						CASE 4
+	
+							IF init = FALSE
+								above_y = lvl_room_light[id].light_pos_y[tmp]
+								under_y = lvl_room_light[id].light_pos_y[tmp]
+								pivot_x = lvl_room_light[id].light_pos_x[tmp]
+								init = TRUE
+							ENDIF
+	
+							DEC above_y, 1
+							IF above_y < 0 THEN above_y = 0
+	
+							INC under_y, 1
+							IF under_y > lvl_room_light[id].size_y - 1 THEN under_y = lvl_room_light[id].size_y - 1
+	
+							DEC pivot_x, 1
+							IF pivot_x <= 0 THEN finished = TRUE
+	
+							FOR tmp_x = above_y TO under_y
+								lvl_room_light[id].tile[pivot_x][tmp_x] = 1
+							NEXT
+	
+						//	finished = TRUE
+							//DEBUG "4 "
+						DEFAULT
+							finished = TRUE
+						ENDSELECT
+	
+	
+					WEND
+	
+				//	lvl_room_light[id].light_calc_finished[tmp] = 1
+				//ENDIF
+	
+			NEXT
+		
+	
+	ENDIF
 
 ENDFUNCTION
 
