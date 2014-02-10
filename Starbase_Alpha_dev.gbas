@@ -16,12 +16,26 @@ LOCAL id
 	sys_init()
 	sys_loader()
 
-	// size 0 - n = n + 1
-	lvl_generator.size_x = 31
-	lvl_generator.size_y = 23
+	IF DOESFILEEXIST("TEST_FILE.ini") = 1
 
-	lvl_generator.rooms_x = 4
-	lvl_generator.rooms_y = 2
+		INIOPEN "TEST_FILE.ini"
+			lvl_generator.size_x = INIGET$("test", "size_x")
+			lvl_generator.size_y = INIGET$("test", "size_y")
+
+			lvl_generator.rooms_x = INIGET$("test", "rooms_on_x")
+			lvl_generator.rooms_y = INIGET$("test", "rooms_on_y")
+		INIOPEN ""
+
+	ELSE
+
+		// size 0 - n = n + 1
+		lvl_generator.size_x = 31
+		lvl_generator.size_y = 23
+
+		lvl_generator.rooms_x = 2
+		lvl_generator.rooms_y = 2
+
+	ENDIF
 
 	lvl_generate_level()
 	lvl_generate_wall()
