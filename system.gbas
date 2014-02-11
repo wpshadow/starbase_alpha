@@ -53,6 +53,7 @@ GLOBAL image[] AS image_type
 FUNCTION sys_init:
 
 	AUTOPAUSE FALSE
+	SMOOTHSHADING TRUE
 
 	// Bildschirmüberprüfung
 	sys_check_resolution()

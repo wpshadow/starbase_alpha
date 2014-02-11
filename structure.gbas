@@ -5,3 +5,17 @@
 
 
 // SETCURRENTDIR("Media") // go to media files
+
+TYPE csv_info_type
+	columns
+ENDTYPE
+
+TYPE csv_assignment_type
+	typ
+ENDTYPE
+
+TYPE csv_content_type
+	content[]
+ENDTYPE
+
+GLOBAL csv_info AS csv_info_type, csv_assignment[] AS csv_assignment_type, csv_content[] AS csv_content_type
