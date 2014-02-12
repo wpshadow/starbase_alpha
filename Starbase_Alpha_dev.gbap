@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-<GLBASIC APP_NAME="Starbase_Alpha_dev" COMPANY_NAME="your_company" CONSOLE_PRG="0" DEBUG="1" DEBUGFULL="0" EDITFILE=".\Starbase_Alpha_dev.gbas" EDITLINE="19" MAXDIMDEBUG="20" PLATFORM_BOX_SELECTION="WIN32" STRICT="1" USERDEF_VERSION="000.001" VERSION="6.003" >
+﻿<?xml version="1.0" encoding="utf-8"?>
+<GLBASIC APP_NAME="Starbase_Alpha_dev" COMPANY_NAME="your_company" CONSOLE_PRG="0" DEBUG="1" DEBUGFULL="0" EDITFILE=".\io.gbas" EDITLINE="7" MAXDIMDEBUG="20" PLATFORM_BOX_SELECTION="WIN32" STRICT="1" USERDEF_VERSION="000.001" VERSION="6.003" >
    <PLATFORMS >
       <PLATFORM ACTIVE="0" FRAMERATE="60" FULLSCREEN="1" MULTISAMPLE="0" NAME="ANDROID" RESX="320" RESY="480" />
       <PLATFORM ACTIVE="0" FRAMERATE="60" FULLSCREEN="1" MULTISAMPLE="0" NAME="CAANOO" RESX="320" RESY="240" />
@@ -26,11 +26,13 @@
       <FILE PATH=".\robot.gbas" />
       <FILE PATH=".\aliens.gbas" />
       <FILE PATH=".\structure.gbas" />
+      <FILE PATH=".\io.gbas" />
    </EDITFILES>
    <SRCFILES >
       <FILE PATH=".\Starbase_Alpha_dev.gbas" />
       <FILE PATH=".\aliens.gbas" />
       <FILE PATH=".\gui.gbas" />
+      <FILE PATH=".\io.gbas" />
       <FILE PATH=".\level.gbas" />
       <FILE PATH=".\robot.gbas" />
       <FILE PATH=".\structure.gbas" />

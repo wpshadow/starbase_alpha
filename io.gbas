@@ -5,3 +5,14 @@
 
 
 // SETCURRENTDIR("Media") // go to media files
+
+
+
+FUNCTION io_lvl_loader: file$
+LOCAL ok
+
+	IF DOESFILEEXIST(file$) = FALSE THEN sys_logging("1 Datei " + file$ + " konnte nicht generiert werden.")
+
+	OPENFILE
+
+ENDFUNCTION
