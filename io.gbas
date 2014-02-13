@@ -6,13 +6,37 @@
 
 // SETCURRENTDIR("Media") // go to media files
 
+TYPE tmp_csv_type
+	line$
+ENDTYPE
 
+GLOBAL io_tmp_csv[] AS tmp_csv_type
 
 FUNCTION io_lvl_loader: file$
-LOCAL ok
+LOCAL ok, m AS tmp_csv_type
 
-	IF DOESFILEEXIST(file$) = FALSE THEN sys_logging("1 Datei " + file$ + " konnte nicht generiert werden.")
+	IF DOESFILEEXIST(file$) = FALSE THEN sys_logging("1 Datei " + file$ + " konnte nicht gefunden werden.")
 
-	OPENFILE
+	ok = OPENFILE(0, file$, 1)
+
+	IF DOESFILEEXIST(file$) = FALSE THEN sys_logging("1 Datei " + file$ + " konnte nicht geöffnet werden.")
+
+		WHILE ENDOFFILE(0) = 0
+
+			READLINE 0, m.line$
+			
+			IF LEN(m.line$) > 0
+				DIMPUSH io_tmp_csv[], m
+			ENDIF
+
+		WEND
+
+	CLOSEFILE 0
+
+
+	DEBUG LEN(io_tmp_csv[])
+	
+	END
+
 
 ENDFUNCTION
