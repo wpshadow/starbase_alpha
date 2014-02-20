@@ -7,7 +7,10 @@
 // SETCURRENTDIR("Media") // go to media files
 
 
-io_lvl_loader("test.lvl")
+io_csv_loader("test.lvl")
+io_csv_processing()
+
+END
 
 main()
 

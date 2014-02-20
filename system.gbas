@@ -297,7 +297,7 @@ FUNCTION sys_debug_console:
 
 ENDFUNCTION
 
-FUNCTION sys_loader:
+FUNCTION sys_loader: file$ = ""
 LOCAL ok, tmp, tmp$, lang, file$
 LOCAL files$[]
 

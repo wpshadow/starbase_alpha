@@ -6,27 +6,63 @@
 
 // SETCURRENTDIR("Media") // go to media files
 
-TYPE tmp_csv_type
+TYPE tmp_csv_raw_type
 	line$
 ENDTYPE
 
-GLOBAL io_tmp_csv[] AS tmp_csv_type
+TYPE tmp_csv_type
+	category
+	column_count
+	column_name$[]
+	column$[]
+	enum_count
+ENDTYPE
 
-FUNCTION io_lvl_loader: file$
-LOCAL ok, m AS tmp_csv_type
 
-	IF DOESFILEEXIST(file$) = FALSE THEN sys_logging("1 Datei " + file$ + " konnte nicht gefunden werden.")
+GLOBAL io_tmp_raw_csv[] AS tmp_csv_raw_type, io_tmp_csv[] AS tmp_csv_type
+
+FUNCTION io_csv_loader: file$
+LOCAL ok, m AS tmp_csv_raw_type, tmp, content
+
+//	IF DOESFILEEXIST(file$) = FALSE THEN
 
 	ok = OPENFILE(0, file$, 1)
 
-	IF DOESFILEEXIST(file$) = FALSE THEN sys_logging("1 Datei " + file$ + " konnte nicht geöffnet werden.")
+//	IF ok = FALSE THEN
 
 		WHILE ENDOFFILE(0) = 0
 
 			READLINE 0, m.line$
-			
+
 			IF LEN(m.line$) > 0
-				DIMPUSH io_tmp_csv[], m
+
+				FOR tmp = 0 TO LEN(m.line$) - 1
+					IF MID$(m.line$, tmp, 1) <> " "
+					
+						content = TRUE
+						// #%>$&;§
+						IF MID$(m.line$, tmp, 1) = ";" OR MID$(m.line$, tmp, 1) = "$"
+							BREAK
+						ENDIF
+						
+						IF MID$(m.line$, tmp, 1) = "#" OR MID$(m.line$, tmp, 1) = "%" OR MID$(m.line$, tmp, 1) = "&" OR MID$(m.line$, tmp, 1) = "§"
+							m.line$ = MID$(m.line$, tmp, -1)
+							BREAK	
+						ENDIF
+						
+						IF MID$(m.line$, tmp, 1) = ">"
+							content = FALSE
+							BREAK
+						ENDIF
+						
+					ENDIF
+				NEXT
+
+				//IF MID$(m.line$, 0, 1) <> ">"
+					IF content = TRUE
+						DIMPUSH io_tmp_raw_csv[], m
+					ENDIF
+				//ENDIF
 			ENDIF
 
 		WEND
@@ -34,9 +70,41 @@ LOCAL ok, m AS tmp_csv_type
 	CLOSEFILE 0
 
 
-	DEBUG LEN(io_tmp_csv[])
-	
-	END
 
+//	IF DOESFILEEXIST(file$) = FALSE THEN sys_logging("1 Datei " + file$ + " konnte nicht gefunden werden.")
+//
+//	ok = OPENFILE(0, file$, 1)
+//
+//	IF ok = FALSE THEN sys_logging("1 Datei " + file$ + " konnte nicht geöffnet werden.")
+//
+//		WHILE ENDOFFILE(0) = 0
+//
+//			READLINE 0, m.line$
+//
+//			IF LEN(m.line$) > 0
+//				IF MID$(m.line$, 0, 1) <> ">"
+//					DIMPUSH io_tmp_raw_csv[], m
+//				ENDIF
+//			ENDIF
+//
+//		WEND
+//
+//	CLOSEFILE 0
+
+ENDFUNCTION
+
+FUNCTION io_clean_csv:
+
+	FOREACH m IN io_tmp_raw_csv[]
+		DELETE m
+	NEXT
+
+ENDFUNCTION
+
+FUNCTION io_csv_processing:
+
+	FOREACH m IN io_tmp_raw_csv[]
+		DEBUG m.line$ + "\n"
+	NEXT
 
 ENDFUNCTION
