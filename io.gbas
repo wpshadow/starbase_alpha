@@ -13,9 +13,9 @@ ENDTYPE
 TYPE tmp_csv_type
 	category
 	column_count
-	column_name$[]
-	column$[]
-	enum_count
+	column_name$[999]
+	column$[999]
+	enum_content[999]
 ENDTYPE
 
 
@@ -102,9 +102,59 @@ FUNCTION io_clean_csv:
 ENDFUNCTION
 
 FUNCTION io_csv_processing:
+//LOCAL bla$[], inhalt$, tmp
+LOCAL tmp, hit, lang
+LOCAL l AS tmp_csv_type
+LOCAL category$
+LOCAL column_count, column$[]
+LOCAL content_count, content$[]
+
+DIM column$[999]
+DIM content$[999]
+
+	column_count 	= -1
+	content_count 	= -1
+
+	FOR tmp = 0 TO 998
+		column$[tmp] 	= "NULL"
+		content$[tmp]	= "NULL"
+	NEXT
+
 
 	FOREACH m IN io_tmp_raw_csv[]
-		DEBUG m.line$ + "\n"
+		
+		hit = FALSE
+		
+		IF MID$(m.line$, 0, 1) = "#"
+			hit = TRUE
+			l.category = MID$(m.line$, 1, -1)
+		ENDIF
+		
+		IF MID$(m.line$, 0, 1) = "%"
+			hit = TRUE
+			column_count = SPLITSTR(MID$(m.line$, 1, -1), column$[], ";", FALSE)
+		ENDIF
+		
+		IF hit = FALSE
+						
+		
+		ENDIF
+		
+		
+		
+		//DEBUG m.line$ + "\n"
 	NEXT
+
+//	DEBUG "\n"
+//	
+//	inhalt$ = "test    ; aadsf   ;;      asdfjjjfjfjfjjf"
+//	
+//	SPLITSTR(inhalt$, bla$[], ";", FALSE)
+	DEBUG column_count + "\n"
+	FOR tmp = 0 TO LEN(column$[]) - 1
+//		IF bla$[tmp] = "" THEN bla$[tmp] = "NULL"
+		DEBUG column$[tmp] + "\n"
+	NEXT
+	
 
 ENDFUNCTION
