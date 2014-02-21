@@ -11,11 +11,11 @@ TYPE tmp_csv_raw_type
 ENDTYPE
 
 TYPE tmp_csv_type
-	category
+	category$
 	column_count
 	column_name$[999]
+	content_count
 	column$[999]
-	enum_content[999]
 ENDTYPE
 
 
@@ -38,23 +38,23 @@ LOCAL ok, m AS tmp_csv_raw_type, tmp, content
 
 				FOR tmp = 0 TO LEN(m.line$) - 1
 					IF MID$(m.line$, tmp, 1) <> " "
-					
+
 						content = TRUE
 						// #%>$&;§
 						IF MID$(m.line$, tmp, 1) = ";" OR MID$(m.line$, tmp, 1) = "$"
 							BREAK
 						ENDIF
-						
+
 						IF MID$(m.line$, tmp, 1) = "#" OR MID$(m.line$, tmp, 1) = "%" OR MID$(m.line$, tmp, 1) = "&" OR MID$(m.line$, tmp, 1) = "§"
 							m.line$ = MID$(m.line$, tmp, -1)
-							BREAK	
+							BREAK
 						ENDIF
-						
+
 						IF MID$(m.line$, tmp, 1) = ">"
 							content = FALSE
 							BREAK
 						ENDIF
-						
+
 					ENDIF
 				NEXT
 
@@ -106,55 +106,101 @@ FUNCTION io_csv_processing:
 LOCAL tmp, hit, lang
 LOCAL l AS tmp_csv_type
 LOCAL category$
-LOCAL column_count, column$[]
-LOCAL content_count, content$[]
+LOCAL column_count, column$[], column_tmp$[]
+LOCAL content_count, content$[], content_old$[]
 
 DIM column$[999]
 DIM content$[999]
+DIM content_old$[999]
 
 	column_count 	= -1
 	content_count 	= -1
 
+	category$ = "NULL"
+
 	FOR tmp = 0 TO 998
-		column$[tmp] 	= "NULL"
-		content$[tmp]	= "NULL"
+		column$[tmp] 		= "NULL"
+		content$[tmp]		= "NULL"
+		content_old$[tmp]	= "NULL"
 	NEXT
 
 
 	FOREACH m IN io_tmp_raw_csv[]
-		
+
 		hit = FALSE
 		
 		IF MID$(m.line$, 0, 1) = "#"
 			hit = TRUE
-			l.category = MID$(m.line$, 1, -1)
+			IF category$ <> MID$(m.line$, 1, -1)
+			
+				FOR tmp = 0 TO 998
+					l.column_name$[tmp]= "NULL"
+				NEXT
+			
+				category$ = MID$(m.line$, 1, -1)
+				l.category$ = MID$(m.line$, 1, -1)
+			ENDIF
 		ENDIF
-		
+
 		IF MID$(m.line$, 0, 1) = "%"
 			hit = TRUE
-			column_count = SPLITSTR(MID$(m.line$, 1, -1), column$[], ";", FALSE)
-		ENDIF
+			column_count = SPLITSTR(MID$(m.line$, 1, -1), column_tmp$[], ";", FALSE)
+			
+			l.column_count = column_count
+
+			FOR tmp = 0 TO column_count - 1
+				l.column_name$[tmp] = column_tmp$[tmp]
+			NEXT
 		
+		ENDIF
+
 		IF hit = FALSE
-						
-		
+			content_count = SPLITSTR(m.line$, content$[], ";", FALSE)
+			
+			l.content_count = content_count
+			
+			FOR tmp = 0 TO content_count - 1
+				IF content$[tmp] = "" THEN content$[tmp] = "NULL"
+				IF content$[tmp] <> "$" THEN content_old$[tmp] = content$[tmp]
+				
+				l.column$[tmp] = content_old$[tmp]
+			NEXT
+			
+			DIMPUSH io_tmp_csv[], l
+			
+			
 		ENDIF
-		
-		
-		
+
+
+
 		//DEBUG m.line$ + "\n"
 	NEXT
 
 //	DEBUG "\n"
-//	
+//
 //	inhalt$ = "test    ; aadsf   ;;      asdfjjjfjfjfjjf"
-//	
+//
 //	SPLITSTR(inhalt$, bla$[], ";", FALSE)
 	DEBUG column_count + "\n"
-	FOR tmp = 0 TO LEN(column$[]) - 1
-//		IF bla$[tmp] = "" THEN bla$[tmp] = "NULL"
-		DEBUG column$[tmp] + "\n"
-	NEXT
 	
+	//FOR tmp = 0 TO LEN(column$[]) - 1
+//		IF bla$[tmp] = "" THEN bla$[tmp] = "NULL"
+	//	DEBUG column$[tmp] + "\n"
+	//NEXT
+	
+	FOREACH m IN io_tmp_csv[]
+		DEBUG m.category$ + " " + m.column_count + "\n"
+		FOR tmp = 0 TO m.column_count - 1
+			DEBUG m.column_name$[tmp] + " "
+		NEXT
+		DEBUG "\n"
+		FOR tmp = 0 TO m.content_count - 1
+			DEBUG m.column$[tmp] + " "
+		NEXT		
+		DEBUG "\n"
+		DEBUG "\n"	
+	
+	NEXT
+
 
 ENDFUNCTION
