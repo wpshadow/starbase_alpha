@@ -107,7 +107,7 @@ LOCAL tmp, hit, lang
 LOCAL l AS tmp_csv_type
 LOCAL category$
 LOCAL column_count, column$[], column_tmp$[]
-LOCAL content_count, content$[], content_old$[]
+LOCAL content_count, content$[], content_old$[], content_tmp$[]
 LOCAL space_before, space_after, old_tmp$
 
 DIM column$[999]
@@ -156,83 +156,124 @@ DIM content_old$[999]
 		ENDIF
 
 		IF hit = FALSE
-			content_count = SPLITSTR(m.line$, content$[], ";", FALSE)
 
-			l.content_count = content_count
+			content_count = SPLITSTR(m.line$, content_tmp$[], ";", FALSE)
 
-			FOR tmp = 0 TO content_count - 1
-				IF content$[tmp] = "" THEN content$[tmp] = "NULL"
-				
-				space_before = io_calc_space(content$[tmp], 0)
-				space_after = io_calc_space(content$[tmp], 1)
-				
-				IF space_before = 0 AND space_after = 0
-					IF content$[tmp] <> "$" THEN content_old$[tmp] = content$[tmp]
-				ELSE
-					IF TRIM$(content$[tmp], " ") = "$"
-						old_tmp$ = content_old$[tmp]
-						
-						content_old$[tmp] = ""
-						
-						IF space_before > 0
-							FOR tmp = 0 TO space_before - 1
-								INC content_old$[tmp], " "
-							NEXT
+				FOR tmp = 0 TO content_count - 1
+
+					space_before = io_calc_space(content_tmp$[tmp], 0)
+					space_after = io_calc_space(content_tmp$[tmp], 1)
+
+					IF LEN(TRIM$(content_tmp$[tmp], " ")) = 1
+						IF TRIM$(content_tmp$[tmp] = "$"
+							content_old$[tmp] 
 						ENDIF
-						
-						INC content_old$[tmp], old_tmp$
-						
-						IF space_after > 0
-							FOR tmp = 0 TO space_after - 1
-								INC content_old$[tmp], " "
-							NEXT
-						ENDIF						
-						
 					ENDIF
-					
-					
-					
-					
-				ENDIF
 
-				l.column$[tmp] = content_old$[tmp]
-			NEXT
-
-			DIMPUSH io_tmp_csv[], l
-
-
+				NEXT
+				
 		ENDIF
 
+	NEXT
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//			content_count = SPLITSTR(m.line$, content$[], ";", FALSE)
+//
+//			l.content_count = content_count
+//
+//			FOR tmp = 0 TO content_count - 1
+//				IF content$[tmp] = "" THEN content$[tmp] = "NULL"
+//
+//				space_before = io_calc_space(content$[tmp], 0)
+//				space_after = io_calc_space(content$[tmp], 1)
+//
+//				IF space_before = 0 AND space_after = 0
+//					IF TRIM$(MID$(content$[tmp], 0, 1) , " ") <> "$" THEN content_old$[tmp] = content$[tmp]
+//				ELSE
+//					IF TRIM$(content$[tmp], " ") = "$"
+//						old_tmp$ = content_old$[tmp]
+//
+//						content_old$[tmp] = ""
+//
+//						IF space_before > 0
+//							FOR tmp = 0 TO space_before - 1
+//								INC content_old$[tmp], " "
+//							NEXT
+//						ENDIF
+//
+//						INC content_old$[tmp], old_tmp$
+//
+//						IF space_after > 0
+//							FOR tmp = 0 TO space_after - 1
+//								INC content_old$[tmp], " "
+//							NEXT
+//						ENDIF
+//
+//					ENDIF
+//
+//
+//
+//
+//				ENDIF
+//
+//				old_tmp$ = ""
+//				l.column$[tmp] = content_old$[tmp]
+//			NEXT
+//			DIMPUSH io_tmp_csv[], l
+
+
+
+
+//		FOR tmp = 0 TO 998
+//			column$[tmp] 		= "NULL"
+//			content$[tmp]		= "NULL"
+//			content_old$[tmp]	= "NULL"
+//		NEXT
 
 		//DEBUG m.line$ + "\n"
-	NEXT
+
 
 //	DEBUG "\n"
 //
 //	inhalt$ = "test    ; aadsf   ;;      asdfjjjfjfjfjjf"
 //
 //	SPLITSTR(inhalt$, bla$[], ";", FALSE)
-	DEBUG column_count + "\n"
+//	DEBUG column_count + "\n"
 
 	//FOR tmp = 0 TO LEN(column$[]) - 1
 //		IF bla$[tmp] = "" THEN bla$[tmp] = "NULL"
 	//	DEBUG column$[tmp] + "\n"
 	//NEXT
 
-	FOREACH m IN io_tmp_csv[]
-		DEBUG m.category$ + " " + m.column_count + "\n"
-		FOR tmp = 0 TO m.column_count - 1
-			DEBUG m.column_name$[tmp] + " "
-		NEXT
-		DEBUG "\n"
-		FOR tmp = 0 TO m.content_count - 1
-			DEBUG m.column$[tmp] + " "
-		NEXT
-		DEBUG "\n"
-		DEBUG "\n"
-
-	NEXT
+//	FOREACH m IN io_tmp_csv[]
+//		DEBUG m.category$ + " " + m.column_count + "\n"
+//		FOR tmp = 0 TO m.column_count - 1
+//			DEBUG m.column_name$[tmp] + " "
+//		NEXT
+//		DEBUG "\n"
+//		FOR tmp = 0 TO m.content_count - 1
+//			DEBUG m.column$[tmp] + " "
+//		NEXT
+//		DEBUG "\n"
+//		DEBUG "\n"
+//
+//	NEXT
 
 
 ENDFUNCTION
@@ -246,7 +287,7 @@ LOCAL lang, tmp, count
 
 	SELECT position
 	CASE 0
-		
+
 		FOR tmp = 0 TO lang - 1
 			IF MID$(string$, tmp, 1) = " "
 				INC count, 1
@@ -254,9 +295,9 @@ LOCAL lang, tmp, count
 				BREAK
 			ENDIF
 		NEXT
-		
+
 	CASE 1
-		
+
 		FOR tmp = lang - 1 TO 0 STEP -1
 			IF MID$(string$, tmp, 1) = " "
 				INC count, 1
@@ -264,7 +305,7 @@ LOCAL lang, tmp, count
 				BREAK
 			ENDIF
 		NEXT
-			
+
 	ENDSELECT
 
 	RETURN count
