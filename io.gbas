@@ -37,25 +37,31 @@ LOCAL ok, m AS tmp_csv_raw_type, tmp, content
 			IF LEN(m.line$) > 0
 
 				FOR tmp = 0 TO LEN(m.line$) - 1
-					IF MID$(m.line$, tmp, 1) <> " "
 
-						content = TRUE
-						// #%>$&;§
-						IF MID$(m.line$, tmp, 1) = ";" OR MID$(m.line$, tmp, 1) = "$"
-							BREAK
-						ENDIF
+					
 
-						IF MID$(m.line$, tmp, 1) = "#" OR MID$(m.line$, tmp, 1) = "%" OR MID$(m.line$, tmp, 1) = "&" OR MID$(m.line$, tmp, 1) = "§"
-							m.line$ = MID$(m.line$, tmp, -1)
-							BREAK
-						ENDIF
 
-						IF MID$(m.line$, tmp, 1) = ">"
-							content = FALSE
-							BREAK
-						ENDIF
 
-					ENDIF
+
+//					IF MID$(m.line$, tmp, 1) <> " "
+//
+//						content = TRUE
+//						// #%>$&;§
+//						IF MID$(m.line$, tmp, 1) = ";" OR MID$(m.line$, tmp, 1) = "$"
+//							BREAK
+//						ENDIF
+//
+//						IF MID$(m.line$, tmp, 1) = "#" OR MID$(m.line$, tmp, 1) = "%" OR MID$(m.line$, tmp, 1) = "&" OR MID$(m.line$, tmp, 1) = "§"
+//							m.line$ = MID$(m.line$, tmp, -1)
+//							BREAK
+//						ENDIF
+//
+//						IF MID$(m.line$, tmp, 1) = ">"
+//							content = FALSE
+//							BREAK
+//						ENDIF
+//
+//					ENDIF
 				NEXT
 
 				//IF MID$(m.line$, 0, 1) <> ">"
@@ -166,12 +172,12 @@ DIM content_old$[999]
 
 					IF LEN(TRIM$(content_tmp$[tmp], " ")) = 1
 						IF TRIM$(content_tmp$[tmp] = "$"
-							content_old$[tmp] 
+							content_old$[tmp]
 						ENDIF
 					ENDIF
 
 				NEXT
-				
+
 		ENDIF
 
 	NEXT
