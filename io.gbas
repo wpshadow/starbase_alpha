@@ -125,62 +125,62 @@ DIM content_old$[999]
 
 	category$ = "NULL"
 
-	FOR tmp = 0 TO 998
-		column$[tmp] 		= "NULL"
-		content$[tmp]		= "NULL"
-		content_old$[tmp]	= "NULL"
-	NEXT
-
-
-	FOREACH m IN io_tmp_raw_csv[]
-
-		hit = FALSE
-
-		IF MID$(m.line$, 0, 1) = "#"
-			hit = TRUE
-			IF category$ <> MID$(m.line$, 1, -1)
-
-				FOR tmp = 0 TO 998
-					l.column_name$[tmp]= "NULL"
-				NEXT
-
-				category$ = MID$(m.line$, 1, -1)
-				l.category$ = MID$(m.line$, 1, -1)
-			ENDIF
-		ENDIF
-
-		IF MID$(m.line$, 0, 1) = "%"
-			hit = TRUE
-			column_count = SPLITSTR(MID$(m.line$, 1, -1), column_tmp$[], ";", FALSE)
-
-			l.column_count = column_count
-
-			FOR tmp = 0 TO column_count - 1
-				l.column_name$[tmp] = column_tmp$[tmp]
-			NEXT
-
-		ENDIF
-
-		IF hit = FALSE
-
-			content_count = SPLITSTR(m.line$, content_tmp$[], ";", FALSE)
-
-				FOR tmp = 0 TO content_count - 1
-
-					space_before = io_calc_space(content_tmp$[tmp], 0)
-					space_after = io_calc_space(content_tmp$[tmp], 1)
-
-					IF LEN(TRIM$(content_tmp$[tmp], " ")) = 1
-						IF TRIM$(content_tmp$[tmp] = "$"
-							content_old$[tmp]
-						ENDIF
-					ENDIF
-
-				NEXT
-
-		ENDIF
-
-	NEXT
+//	FOR tmp = 0 TO 998
+//		column$[tmp] 		= "NULL"
+//		content$[tmp]		= "NULL"
+//		content_old$[tmp]	= "NULL"
+//	NEXT
+//
+//
+//	FOREACH m IN io_tmp_raw_csv[]
+//
+//		hit = FALSE
+//
+//		IF MID$(m.line$, 0, 1) = "#"
+//			hit = TRUE
+//			IF category$ <> MID$(m.line$, 1, -1)
+//
+//				FOR tmp = 0 TO 998
+//					l.column_name$[tmp]= "NULL"
+//				NEXT
+//
+//				category$ = MID$(m.line$, 1, -1)
+//				l.category$ = MID$(m.line$, 1, -1)
+//			ENDIF
+//		ENDIF
+//
+//		IF MID$(m.line$, 0, 1) = "%"
+//			hit = TRUE
+//			column_count = SPLITSTR(MID$(m.line$, 1, -1), column_tmp$[], ";", FALSE)
+//
+//			l.column_count = column_count
+//
+//			FOR tmp = 0 TO column_count - 1
+//				l.column_name$[tmp] = column_tmp$[tmp]
+//			NEXT
+//
+//		ENDIF
+//
+//		IF hit = FALSE
+//
+//			content_count = SPLITSTR(m.line$, content_tmp$[], ";", FALSE)
+//
+//				FOR tmp = 0 TO content_count - 1
+//
+//					space_before = io_calc_space(content_tmp$[tmp], 0)
+//					space_after = io_calc_space(content_tmp$[tmp], 1)
+//
+//					IF LEN(TRIM$(content_tmp$[tmp], " ")) = 1
+//						IF TRIM$(content_tmp$[tmp] = "$"
+//							content_old$[tmp]
+//						ENDIF
+//					ENDIF
+//
+//				NEXT
+//
+//		ENDIF
+//
+//	NEXT
 
 
 
