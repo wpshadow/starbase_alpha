@@ -31,6 +31,8 @@ LOCAL ok, m AS tmp_csv_raw_type, tmp, content
 //	IF ok = FALSE THEN
 
 		WHILE ENDOFFILE(0) = 0
+			
+			content = TRUE
 
 			READLINE 0, m.line$
 
@@ -38,37 +40,27 @@ LOCAL ok, m AS tmp_csv_raw_type, tmp, content
 
 				FOR tmp = 0 TO LEN(m.line$) - 1
 
+					IF TRIM$(m.line$) = ""
+						content = FALSE
+						BREAK
+					ENDIF
 					
-
-
-
-
-//					IF MID$(m.line$, tmp, 1) <> " "
-//
-//						content = TRUE
-//						// #%>$&;§
-//						IF MID$(m.line$, tmp, 1) = ";" OR MID$(m.line$, tmp, 1) = "$"
-//							BREAK
-//						ENDIF
-//
-//						IF MID$(m.line$, tmp, 1) = "#" OR MID$(m.line$, tmp, 1) = "%" OR MID$(m.line$, tmp, 1) = "&" OR MID$(m.line$, tmp, 1) = "§"
-//							m.line$ = MID$(m.line$, tmp, -1)
-//							BREAK
-//						ENDIF
-//
-//						IF MID$(m.line$, tmp, 1) = ">"
-//							content = FALSE
-//							BREAK
-//						ENDIF
-//
-//					ENDIF
+					IF MID$(m.line$, tmp, 1) = ">"
+						content = FALSE
+						BREAK
+					ENDIF
+					
+					IF MID$(m.line$, tmp, 1) = "#" OR MID$(m.line$, tmp, 1) = "&" OR MID$(m.line$, tmp, 1) = "%"
+						m.line$ = TRIM$(m.line$)
+						BREAK
+					ENDIF
+					
 				NEXT
 
-				//IF MID$(m.line$, 0, 1) <> ">"
-					IF content = TRUE
-						DIMPUSH io_tmp_raw_csv[], m
-					ENDIF
-				//ENDIF
+				IF content = TRUE
+					DIMPUSH io_tmp_raw_csv[], m
+				ENDIF
+
 			ENDIF
 
 		WEND
@@ -124,6 +116,11 @@ DIM content_old$[999]
 	content_count 	= -1
 
 	category$ = "NULL"
+
+	FOREACH m IN io_tmp_raw_csv[]
+		DEBUG m.line$ + "\n"
+	NEXT
+
 
 //	FOR tmp = 0 TO 998
 //		column$[tmp] 		= "NULL"
