@@ -10,16 +10,19 @@ TYPE tmp_csv_raw_type
 	line$
 ENDTYPE
 
-TYPE tmp_csv_type
-	category$
-	column_count
-	column_name$[999]
-	content_count
-	column$[999]
+TYPE io_csv_processed_type
+	header$
+	term[] 		AS content
+	column[] 	AS content
+	info[]		AS content
+ENDTYPE
+
+TYPE content
+	content$
 ENDTYPE
 
 
-GLOBAL io_tmp_raw_csv[] AS tmp_csv_raw_type, io_tmp_csv[] AS tmp_csv_type
+GLOBAL io_tmp_raw_csv[] AS tmp_csv_raw_type, io_csv_processed[] AS io_csv_processed_type
 
 FUNCTION io_csv_loader: file$
 LOCAL ok, m AS tmp_csv_raw_type, tmp, content
@@ -78,10 +81,90 @@ FUNCTION io_clean_csv:
 ENDFUNCTION
 
 FUNCTION io_csv_processing:
+LOCAL header$, header_old$
+LOCAL terms$[], columns$[], infos$[], temp$[], term_counter
+LOCAL text$, inhalt$[], lang, processed
+
+DIM terms$[1000]
+DIM columns$[1000]
+DIM infos$[1000]
+DIM temp$[1000]
+
+	header$ = 		"NULL"
+	header_old$ = 	"NULL"
+	term_counter = 0
+	
+	FOR tmp = 0 TO 999
+		temp$[tmp] = "NULL"
+	NEXT
+
+
 
 	FOREACH m IN io_tmp_raw_csv[]
-		DEBUG m.line$ + "\n"
+		//DEBUG m.line$ + "\n"
+
+		processed = FALSE
+		
+		FOR tmp = 0 TO LEN(inhalt$[]) - 1
+			DIMDEL inhalt$[], -1
+		NEXT
+
+		IF MID$(m.line$, 0, 1) = "#"
+			header$ = MID$(m.line$, 1, -1)
+			processed = TRUE
+		ENDIF
+		// ===
+		IF header_old$ <> header$
+			header_old$ = header$
+			
+			term_counter = 0
+			
+			FOR tmp = 0 TO 999
+				terms$[tmp] = "NULL"
+				columns$[tmp] = "NULL"
+				infos$[tmp] = "NULL"
+			NEXT			
+			
+		ENDIF
+		// ===
+		IF MID$(m.line$, 0, 1) = "§"
+			text$ = MID$(m.line$, 1, -1)
+			
+			terms$[term_counter] = text$
+			INC term_counter, 1
+			
+			processed = TRUE
+		ENDIF
+		// ===
+		IF MID$(m.line$, 0, 1) = "%"
+			text$ = MID$(m.line$, 1, -1)
+			
+			lang = SPLITSTR(text$, inhalt$[], ";")
+			
+			FOR tmp = 0 TO lang -1
+				columns$[tmp] = inhalt$[tmp]
+			NEXT
+			
+			processed = TRUE
+		ENDIF
+		
+		IF processed = FALSE
+			lang = SPLITSTR(m.line$, inhalt$[], -1)
+			
+			FOR tmp = 0 TO lang - 1
+				
+				infos$[tmp] = inhalt$[tmp]
+				DEBUG inhalt$[tmp] + " "
+			NEXT
+			
+			
+		ENDIF
+		
+
+		
 	NEXT
+
+	
 
 ENDFUNCTION
 
