@@ -222,3 +222,5 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+*.exe
+Starbase_Alpha_dev.app/Starbase_Alpha_dev.exe
