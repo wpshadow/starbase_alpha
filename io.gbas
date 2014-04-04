@@ -93,7 +93,7 @@ DIM temp$[1000]
 	header$ = 		"NULL"
 	header_old$ = 	"NULL"
 	term_counter = 0
-	
+
 	FOR tmp = 0 TO 999
 		temp$[tmp] = "NULL"
 	NEXT
@@ -104,7 +104,7 @@ DIM temp$[1000]
 		//DEBUG m.line$ + "\n"
 
 		processed = FALSE
-		
+
 		FOR tmp = 0 TO LEN(inhalt$[]) - 1
 			DIMDEL inhalt$[], -1
 		NEXT
@@ -116,55 +116,84 @@ DIM temp$[1000]
 		// ===
 		IF header_old$ <> header$
 			header_old$ = header$
-			
+
 			term_counter = 0
-			
+
 			FOR tmp = 0 TO 999
 				terms$[tmp] = "NULL"
 				columns$[tmp] = "NULL"
 				infos$[tmp] = "NULL"
-			NEXT			
-			
+			NEXT
+
 		ENDIF
 		// ===
 		IF MID$(m.line$, 0, 1) = "§"
 			text$ = MID$(m.line$, 1, -1)
-			
+
 			terms$[term_counter] = text$
 			INC term_counter, 1
-			
+
 			processed = TRUE
 		ENDIF
 		// ===
 		IF MID$(m.line$, 0, 1) = "%"
 			text$ = MID$(m.line$, 1, -1)
-			
+
 			lang = SPLITSTR(text$, inhalt$[], ";")
-			
+
 			FOR tmp = 0 TO lang -1
 				columns$[tmp] = inhalt$[tmp]
 			NEXT
-			
+
 			processed = TRUE
 		ENDIF
-		
-		IF processed = FALSE
-			lang = SPLITSTR(m.line$, inhalt$[], -1)
-			
-			FOR tmp = 0 TO lang - 1
-				
-				infos$[tmp] = inhalt$[tmp]
-				DEBUG inhalt$[tmp] + " "
-			NEXT
-			
-			
-		ENDIF
-		
 
-		
+		IF processed = FALSE
+			lang = SPLITSTR(m.line$, inhalt$[], ";")
+
+			FOR tmp = 0 TO lang - 1
+
+				infos$[tmp] = inhalt$[tmp]
+				DEBUG io_calc_space_right(inhalt$[tmp]) + " " + inhalt$[tmp] + "\n"
+			NEXT
+
+
+		ENDIF
+
+		DEBUG "\n"
+
 	NEXT
 
+
+
+ENDFUNCTION
+
+FUNCTION io_add_space$: count
+LOCAL tmp, space$
+
+	FOR tmp = 0 TO count - 1
+		INC space$, " "
+	NEXT
 	
+	RETURN space$
+
+ENDFUNCTION
+
+FUNCTION io_calc_space_left: string$
+LOCAL size
+
+	size = LEN(string$) - LEN(LTRIM$(string$))
+
+	RETURN size
+
+ENDFUNCTION
+
+FUNCTION io_calc_space_right: string$
+LOCAL size
+
+	size = LEN(string$) - LEN(RTRIM$(string$))
+
+	RETURN size
 
 ENDFUNCTION
 
