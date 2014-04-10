@@ -153,14 +153,26 @@ DIM temp$[1000]
 
 			FOR tmp = 0 TO lang - 1
 
-				infos$[tmp] = inhalt$[tmp]
-				DEBUG io_calc_space_right(inhalt$[tmp]) + " " + inhalt$[tmp] + "\n"
+				//infos$[tmp] = inhalt$[tmp]
+				
+				IF TRIM$(inhalt$[tmp]) = "$"
+					DEBUG "$" + "\n"
+				ELSE
+					DEBUG "STR" + "\n"
+				ENDIF
+				
+				
+				
+				
+				//DEBUG io_calc_space_right(inhalt$[tmp]) + " " + inhalt$[tmp] + "\n"
 			NEXT
+			
+			DEBUG "-----" + "\n"
 
 
 		ENDIF
 
-		DEBUG "\n"
+		//DEBUG "\n"
 
 	NEXT
 
@@ -174,7 +186,7 @@ LOCAL tmp, space$
 	FOR tmp = 0 TO count - 1
 		INC space$, " "
 	NEXT
-	
+
 	RETURN space$
 
 ENDFUNCTION
